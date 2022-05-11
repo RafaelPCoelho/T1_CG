@@ -1,12 +1,12 @@
 import * as THREE from "three";
-import Stats from "../build/jsm/libs/stats.module.js";
-import { TrackballControls } from "../build/jsm/controls/TrackballControls.js";
+import Stats from "../../build/jsm/libs/stats.module.js";
+import { TrackballControls } from "../../build/jsm/controls/TrackballControls.js";
 import {
   initRenderer,
   initCamera,
   InfoBox,
   onWindowResize,
-} from "../libs/util/util.js";
+} from "../../libs/util/util.js";
 
 var stats = new Stats(); // To show FPS information
 var scene = new THREE.Scene(); // Create main scene
