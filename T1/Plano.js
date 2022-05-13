@@ -4,12 +4,12 @@ import { createGroundPlaneWired } from "../libs/util/util.js";
 
 var Plano = function () {
   this.plano = createGroundPlaneWired(600, 600);
-  this.x = x;
-  this.z = z;
 
   this.init = () => {
     scene.add(this.plano);
   };
+
+  this.init();
 };
 
 function PlanoInfinito(camera, plano) {
