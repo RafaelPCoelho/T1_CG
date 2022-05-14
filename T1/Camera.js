@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { clamp, lerp, slerp } from "./libs/utils/math.js";
-import { initCamera } from "../libs/util/util.js";
+import { initCamera, radiansToDegrees } from "../libs/util/util.js";
 import { airplane, scene } from "./script.js";
 
 const Camera = function () {
@@ -8,6 +8,9 @@ const Camera = function () {
 
   this.camera = initCamera(new THREE.Vector3(0, 200, 200));
   this.cameraTransform = new THREE.Mesh();
+
+  this.theta = Math.atan2(200, 220);
+  console.log("DEG", radiansToDegrees(this.theta));
 
   this.ticker = 0;
   this.dtLerp = 1000;

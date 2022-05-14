@@ -7,15 +7,17 @@ const Airplane = function () {
   this.size = 10;
   this.vx = 0;
   this.vy = 0;
-  this.vz = -0.5;
+  this.vz = -1;
 
   this.mesh = new THREE.Mesh(
     new THREE.ConeGeometry(this.radius, this.size),
-    new THREE.MeshNormalMaterial()
+    new THREE.MeshLambertMaterial({
+      color: "rgb(50, 100, 10)",
+    })
   );
 
   this.init = () => {
-    this.mesh.position.set(0, 50, 0);
+    this.mesh.position.set(0, 50, 80);
     this.mesh.rotateX(degreesToRadians(-90));
     scene.add(this.mesh);
   };
@@ -43,7 +45,7 @@ const Airplane = function () {
       this.vx = 0;
     }
     if (keyboard.up("W") || keyboard.up("S")) {
-      this.vz = -0.5;
+      this.vz = -1;
     }
 
     this.mesh.position.set(
