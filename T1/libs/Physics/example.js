@@ -7,7 +7,8 @@ import {
   InfoBox,
   onWindowResize,
 } from "../../../libs/util/util.js";
-import { checkCollision } from "./index.js";
+import { checkCollision } from "../Collision/index.js";
+import { pushBack } from "./index.js";
 import KeyboardState from "../../../libs/util/KeyboardState.js";
 
 var stats = new Stats(); // To show FPS information
@@ -47,12 +48,18 @@ var NUMBER_OF_CUBES = 5;
 
 var cubes = Array(NUMBER_OF_CUBES)
   .fill("")
-  .map(() => {
+  .map((_, i) => {
     let cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
 
     let rx = -25 + Math.random() * 50;
     let ry = -25 + Math.random() * 50;
     let rz = -25 + Math.random() * 50;
+
+    cube.userData.weight = 1 + Math.random() * 2;
+    cube.userData.velCollision = 0;
+    cube.userData.id = i;
+    cube.userData.collisor = null;
+    cube.userData.interacted = false;
 
     cube.position.set(rx, ry, 2);
 
@@ -62,12 +69,9 @@ var cubes = Array(NUMBER_OF_CUBES)
 
 // Use this to show information onscreen
 var controls = new InfoBox();
-controls.add("Basic Scene");
+controls.add("Physics Example");
 controls.addParagraph();
-controls.add("Use mouse to interact:");
-controls.add("* Left button to rotate");
-controls.add("* Right button to translate (pan)");
-controls.add("* Scroll to zoom in/out.");
+controls.add("Use arrows to move the blue box");
 controls.show();
 
 // Listen window size changes
@@ -93,15 +97,31 @@ function render() {
   if (keyboard.pressed("space")) cubes[0].translateZ(0.5);
   if (keyboard.pressed("C")) cubes[0].translateZ(-0.5);
 
+  // Set physic state
+  var colliders = [];
   cubes.forEach((cube, i) => {
-    var colliding = cubes.find(
-      (collisor, j) => i !== j && checkCollision(cube, collisor)
+    cube.userData.collisor == null;
+    cube.userData.interacted == false;
+
+    colliders.push(
+      cubes.filter((collisor, j) => i !== j && checkCollision(cube, collisor))
     );
-    if (colliding) {
+
+    colliders[i].map((collider) => {
       cube.material = markedMaterial;
-    } else {
+      collider.userData.velCollision =
+        i == 0 ? 0.5 : cube.userData.velCollision;
+    });
+
+    if (colliders[i].length == 0)
       cube.material = i == 0 ? meMaterial : cubeMaterial;
-    }
+  });
+
+  // Run physics interactions
+  cubes.forEach((cube, i) => {
+    colliders[i].map((collider) => {
+      pushBack(cube, collider, cube.userData.velCollision);
+    });
   });
 
   stats.update(); // Update FPS
