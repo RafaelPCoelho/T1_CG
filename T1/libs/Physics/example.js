@@ -10,6 +10,7 @@ import {
 import { checkCollision } from "../Collision/index.js";
 import { pushBack } from "./index.js";
 import KeyboardState from "../../../libs/util/KeyboardState.js";
+import { invVec, mulVec } from "../utils/vec.js";
 
 var stats = new Stats(); // To show FPS information
 var scene = new THREE.Scene(); // Create main scene
@@ -56,10 +57,9 @@ var cubes = Array(NUMBER_OF_CUBES)
     let rz = -25 + Math.random() * 50;
 
     cube.userData.weight = 1 + Math.random() * 2;
-    cube.userData.velCollision = 0;
+    cube.userData.force = new THREE.Vector3(0, 0, 0);
     cube.userData.id = i;
-    cube.userData.collisor = null;
-    cube.userData.interacted = false;
+    cube.userData.colliding = false;
 
     cube.position.set(rx, ry, 2);
 
@@ -86,42 +86,69 @@ window.addEventListener(
 var keyboard = new KeyboardState();
 scene.add(new THREE.HemisphereLight());
 
+var vel = 2;
+var dt = 0;
+var lt = 0;
+
 render();
-function render() {
+function render(t) {
+  dt = t - lt;
+  lt = t;
   keyboard.update();
 
-  if (keyboard.pressed("left")) cubes[0].translateX(-0.5);
-  if (keyboard.pressed("right")) cubes[0].translateX(0.5);
-  if (keyboard.pressed("up")) cubes[0].translateY(0.5);
-  if (keyboard.pressed("down")) cubes[0].translateY(-0.5);
-  if (keyboard.pressed("space")) cubes[0].translateZ(0.5);
-  if (keyboard.pressed("C")) cubes[0].translateZ(-0.5);
+  var speed = (vel * dt) / 100;
+
+  if (keyboard.pressed("left")) cubes[0].translateX(-speed);
+  if (keyboard.pressed("right")) cubes[0].translateX(speed);
+  if (keyboard.pressed("up")) cubes[0].translateY(speed);
+  if (keyboard.pressed("down")) cubes[0].translateY(-speed);
+  if (keyboard.pressed("space")) cubes[0].translateZ(speed);
+  if (keyboard.pressed("C")) cubes[0].translateZ(-speed);
 
   // Set physic state
-  var colliders = [];
-  cubes.forEach((cube, i) => {
-    cube.userData.collisor == null;
-    cube.userData.interacted == false;
+  for (let i = 0; i < cubes.length - 2; i++) {
+    for (let j = i + 1; j < cubes.length - 1; j++) {
+      let collision = checkCollision(cubes[i], cubes[j]);
 
-    colliders.push(
-      cubes.filter((collisor, j) => i !== j && checkCollision(cube, collisor))
-    );
+      if (collision) {
+        let speedVec = mulVec(collision, speed);
+        cubes[i].userData.colliding = true;
+        cubes[j].userData.colliding = true;
 
-    colliders[i].map((collider) => {
-      cube.material = markedMaterial;
-      collider.userData.velCollision =
-        i == 0 ? 0.5 : cube.userData.velCollision;
-    });
+        cubes[i].userData.force.add(invVec(mulVec(speedVec, 0.5)));
+        cubes[j].userData.force.add(mulVec(speedVec, 0.5));
+      }
+    }
+  }
 
-    if (colliders[i].length == 0)
-      cube.material = i == 0 ? meMaterial : cubeMaterial;
-  });
+  // cubes.forEach((cube, i) => {
+  //   cube.userData.force.set(0, 0, 0);
+
+  //   cubes.forEach((cube, j) => {});
+
+  //   colliders[i].map((collider) => {
+  //     cube.material = markedMaterial;
+  //     collider.userData.force = i == 0 ? 0.5 : cube.userData.force;
+  //   });
+
+  //   if (colliders[i].length == 0)
+  //     cube.material = i == 0 ? meMaterial : cubeMaterial;
+  // });
 
   // Run physics interactions
   cubes.forEach((cube, i) => {
-    colliders[i].map((collider) => {
-      pushBack(cube, collider, cube.userData.velCollision);
-    });
+    if (cube.userData.colliding) {
+      // cube.material = markedMaterial;
+    } else {
+      cube.material = i == 0 ? meMaterial : cubeMaterial;
+    }
+
+    cube.translateX(cube.userData.force.x);
+    cube.translateY(cube.userData.force.y);
+    cube.translateZ(cube.userData.force.z);
+
+    cube.userData.colliding = false;
+    cube.userData.force.set(0, 0, 0);
   });
 
   stats.update(); // Update FPS

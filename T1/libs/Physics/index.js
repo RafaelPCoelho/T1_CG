@@ -3,7 +3,7 @@ import { distVec, absVec, normVec } from "../utils/vec.js";
 const pushBack = (body1, body2, speed) => {
   if (speed == 0) return;
 
-  let dist = distVec(body1, body2);
+  let dist = distVec(body1.position, body2.position);
   let nDist = normVec(dist);
   let absDist = absVec(nDist);
 

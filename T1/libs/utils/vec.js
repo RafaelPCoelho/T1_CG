@@ -11,14 +11,12 @@ const normVec = (vector) => {
 const absVec = (vector) =>
   new THREE.Vector3(Math.abs(vector.x), Math.abs(vector.y), Math.abs(vector.z));
 
-const distVec = (body1, body2) =>
-  new THREE.Vector3(
-    body2.position.x - body1.position.x,
-    body2.position.y - body1.position.y,
-    body2.position.z - body1.position.z
-  );
+const distVec = (vec1, vec2) =>
+  new THREE.Vector3(vec2.x - vec1.x, vec2.y - vec1.y, vec2.z - vec1.z);
 
 const mulVec = (vector, scalar) =>
   new THREE.Vector3(vector.x * scalar, vector.y * scalar, vector.z * scalar);
 
-export { normVec, absVec, distVec, mulVec };
+const invVec = (vector) => new THREE.Vector3(-vector.x, -vector.y, -vector.z);
+
+export { normVec, absVec, distVec, mulVec, invVec };
