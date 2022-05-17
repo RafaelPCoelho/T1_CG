@@ -106,8 +106,8 @@ function render(t) {
   if (keyboard.pressed("C")) cubes[0].translateZ(-speed);
 
   // Set physic state
-  for (let i = 0; i < cubes.length - 2; i++) {
-    for (let j = i + 1; j < cubes.length - 1; j++) {
+  for (let i = 0; i < cubes.length - 1; i++) {
+    for (let j = i + 1; j < cubes.length; j++) {
       let collision = checkCollision(cubes[i], cubes[j]);
 
       if (collision) {
@@ -115,8 +115,9 @@ function render(t) {
         cubes[i].userData.colliding = true;
         cubes[j].userData.colliding = true;
 
-        cubes[i].userData.force.add(invVec(mulVec(speedVec, 0.5)));
         cubes[j].userData.force.add(mulVec(speedVec, 0.5));
+        cubes[i].userData.force.add(invVec(cubes[j].userData.force));
+        // invVec(mulVec(speedVec, 0.5))
       }
     }
   }
