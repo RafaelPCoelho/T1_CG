@@ -10,7 +10,14 @@ import {
 import { checkCollision } from "../Collision/index.js";
 import { pushBack } from "./index.js";
 import KeyboardState from "../../../libs/util/KeyboardState.js";
-import { invVec, mulVec } from "../utils/vec.js";
+import {
+  absVec,
+  invVec,
+  mulDVec,
+  mulVec,
+  sumVec,
+  uniVec,
+} from "../utils/vec.js";
 
 var stats = new Stats(); // To show FPS information
 var scene = new THREE.Scene(); // Create main scene
@@ -90,6 +97,49 @@ var vel = 2;
 var dt = 0;
 var lt = 0;
 
+var move = (body, reset) => {
+  body.translateX(body.userData.force.x);
+  body.translateY(body.userData.force.y);
+  body.translateZ(body.userData.force.z);
+
+  if (reset) body.userData.force.set(0, 0, 0);
+};
+
+var interact = (i) => {
+  var body = cubes[i];
+  var fat = uniVec(mulVec(invVec(body.userData.force), 0.25));
+  var startForce = body.userData.force.clone();
+
+  body.userData.force = sumVec(body.userData.force, fat);
+  move(body);
+
+  for (let j = i + 1; j < cubes.length; j++) {
+    var collision = checkCollision(body, cubes[j]);
+
+    if (collision) {
+      var target = cubes[j];
+
+      body.userData.colliding = true;
+      target.userData.colliding = true;
+
+      var applyForce = mulDVec(collision, absVec(body.userData.force));
+      target.userData.force = applyForce;
+      // console.log(applyForce, collision, startForce, fat);
+
+      var reaction = sumVec(interact(j), fat);
+
+      target.userData.force.set(0, 0, 0);
+      body.userData.force.set(reaction.x, reaction.y, reaction.z);
+      // console.log("reaction", reaction);
+
+      move(body, true);
+      return reaction;
+    }
+  }
+
+  return fat;
+};
+
 render();
 function render(t) {
   dt = t - lt;
@@ -98,59 +148,46 @@ function render(t) {
 
   var speed = (vel * dt) / 100;
 
-  if (keyboard.pressed("left")) cubes[0].translateX(-speed);
-  if (keyboard.pressed("right")) cubes[0].translateX(speed);
-  if (keyboard.pressed("up")) cubes[0].translateY(speed);
-  if (keyboard.pressed("down")) cubes[0].translateY(-speed);
-  if (keyboard.pressed("space")) cubes[0].translateZ(speed);
-  if (keyboard.pressed("C")) cubes[0].translateZ(-speed);
+  if (keyboard.pressed("left")) cubes[0].userData.force.x = -speed;
+  if (keyboard.pressed("right")) cubes[0].userData.force.x = speed;
+  if (keyboard.pressed("up")) cubes[0].userData.force.y = speed;
+  if (keyboard.pressed("down")) cubes[0].userData.force.y = -speed;
+  if (keyboard.pressed("space")) cubes[0].userData.force.z = speed;
+  if (keyboard.pressed("C")) cubes[0].userData.force.z = -speed;
+
+  if (keyboard.up("left") || keyboard.up("right"))
+    cubes[0].userData.force.x = 0;
+  if (keyboard.up("up") || keyboard.up("down")) cubes[0].userData.force.y = 0;
+  if (keyboard.up("space") || keyboard.up("C")) cubes[0].userData.force.z = 0;
 
   // Set physic state
   for (let i = 0; i < cubes.length - 1; i++) {
-    for (let j = i + 1; j < cubes.length; j++) {
-      let collision = checkCollision(cubes[i], cubes[j]);
+    cubes[i].userData.colliding = false;
 
-      if (collision) {
-        let speedVec = mulVec(collision, speed);
-        cubes[i].userData.colliding = true;
-        cubes[j].userData.colliding = true;
+    interact(i);
 
-        cubes[j].userData.force.add(mulVec(speedVec, 0.5));
-        cubes[i].userData.force.add(invVec(cubes[j].userData.force));
-        // invVec(mulVec(speedVec, 0.5))
-      }
+    if (cubes[i].userData.colliding) {
+      cubes[i].material = markedMaterial;
+    } else {
+      cubes[i].material = i == 0 ? meMaterial : cubeMaterial;
     }
   }
 
-  // cubes.forEach((cube, i) => {
-  //   cube.userData.force.set(0, 0, 0);
-
-  //   cubes.forEach((cube, j) => {});
-
-  //   colliders[i].map((collider) => {
-  //     cube.material = markedMaterial;
-  //     collider.userData.force = i == 0 ? 0.5 : cube.userData.force;
-  //   });
-
-  //   if (colliders[i].length == 0)
-  //     cube.material = i == 0 ? meMaterial : cubeMaterial;
-  // });
-
   // Run physics interactions
-  cubes.forEach((cube, i) => {
-    if (cube.userData.colliding) {
-      // cube.material = markedMaterial;
-    } else {
-      cube.material = i == 0 ? meMaterial : cubeMaterial;
-    }
+  // cubes.forEach((cube, i) => {
+  //   if (cube.userData.colliding) {
+  //     // cube.material = markedMaterial;
+  //   } else {
+  //     cube.material = i == 0 ? meMaterial : cubeMaterial;
+  //   }
 
-    cube.translateX(cube.userData.force.x);
-    cube.translateY(cube.userData.force.y);
-    cube.translateZ(cube.userData.force.z);
+  //   cube.translateX(cube.userData.force.x);
+  //   cube.translateY(cube.userData.force.y);
+  //   cube.translateZ(cube.userData.force.z);
 
-    cube.userData.colliding = false;
-    cube.userData.force.set(0, 0, 0);
-  });
+  //   cube.userData.colliding = false;
+  //   cube.userData.force.set(0, 0, 0);
+  // });
 
   stats.update(); // Update FPS
   trackballControls.update(); // Enable mouse movements
