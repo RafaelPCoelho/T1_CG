@@ -105,39 +105,41 @@ var move = (body, reset) => {
   if (reset) body.userData.force.set(0, 0, 0);
 };
 
-var interact = (i) => {
+var interact = (i, parent) => {
   var body = cubes[i];
   var fat = uniVec(mulVec(invVec(body.userData.force), 0.25));
   var startForce = body.userData.force.clone();
+  var reaction = fat.clone();
 
   body.userData.force = sumVec(body.userData.force, fat);
   move(body);
 
-  for (let j = i + 1; j < cubes.length; j++) {
-    var collision = checkCollision(body, cubes[j]);
+  for (let j = 0; j < cubes.length; j++) {
+    if (j !== i && j !== parent) {
+      var collision = checkCollision(body, cubes[j]);
 
-    if (collision) {
-      var target = cubes[j];
+      if (collision) {
+        var target = cubes[j];
 
-      body.userData.colliding = true;
-      target.userData.colliding = true;
+        body.userData.colliding = true;
+        target.userData.colliding = true;
 
-      var applyForce = mulDVec(collision, absVec(body.userData.force));
-      target.userData.force = applyForce;
-      // console.log(applyForce, collision, startForce, fat);
+        var applyForce = mulDVec(collision, absVec(body.userData.force));
+        target.userData.force = applyForce;
+        // console.log(applyForce, collision, startForce, fat);
 
-      var reaction = sumVec(interact(j), fat);
+        reaction.add(interact(j, i));
 
-      target.userData.force.set(0, 0, 0);
-      body.userData.force.set(reaction.x, reaction.y, reaction.z);
-      // console.log("reaction", reaction);
-
-      move(body, true);
-      return reaction;
+        target.userData.force.set(0, 0, 0);
+        body.userData.force.set(reaction.x, reaction.y, reaction.z);
+        // console.log("reaction", reaction);
+        move(body);
+        body.userData.force = startForce;
+      }
     }
   }
 
-  return fat;
+  return reaction;
 };
 
 render();
@@ -164,7 +166,7 @@ function render(t) {
   for (let i = 0; i < cubes.length - 1; i++) {
     cubes[i].userData.colliding = false;
 
-    interact(i);
+    interact(i, i);
 
     if (cubes[i].userData.colliding) {
       cubes[i].material = markedMaterial;
