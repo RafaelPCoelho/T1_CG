@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { degreesToRadians } from "../libs/util/util.js";
-import { scene, camera, keyboard, enemies } from "./script.js";
+import { scene, camera, keyboard, enemyManager } from "./script.js";
 import Bullet from "./Bullet.js";
 import { checkCollision } from "./libs/Collision/index.js";
 
@@ -21,6 +21,8 @@ const Airplane = function () {
     new THREE.ConeGeometry(this.radius, this.size),
     this.material
   );
+  // this.mesh.geometry.computeBoundingBox();
+  // console.log(this.mesh.geometry.boundingBox);
   this.collisor = new THREE.Mesh(
     new THREE.BoxGeometry(this.radius * 2, this.radius * 2, this.size)
     // this.colMat
@@ -86,12 +88,6 @@ const Airplane = function () {
       this.mesh.position.y,
       this.mesh.position.z
     );
-
-    enemies.forEach((enemy) => {
-      if (checkCollision(this.collisor, enemy.mesh)) {
-        this.destroy();
-      }
-    });
 
     this.bullets.forEach((bullet) => {
       bullet.update();

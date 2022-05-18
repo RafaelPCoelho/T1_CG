@@ -1,8 +1,14 @@
 import * as THREE from "three";
-import { basicMaterial, scene, enemies, camera } from "./script.js";
+import {
+  basicMaterial,
+  scene,
+  enemyManager,
+  camera,
+  airplane,
+} from "./script.js";
 import { checkCollision } from "./libs/Collision/index.js";
 
-const Bullet = function (position, onDestroy) {
+const Bullet = function (position, i) {
   this.mesh = new THREE.Mesh(
     new THREE.BoxGeometry(1, 1, 10),
     new THREE.MeshStandardMaterial({
@@ -13,12 +19,14 @@ const Bullet = function (position, onDestroy) {
   this.mesh.position.set(position.x, position.y, position.z);
   // this.mesh.rotation.set(rotation);
   scene.add(this.mesh);
+  this.index = i;
 
   this.speed = 5;
 
   this.destroy = () => {
-    if (onDestroy) onDestroy();
+    airplane.bullets.splice(i, 1);
     scene.remove(this.mesh);
+    console.log(`Killed bullet ${i}`);
   };
 
   this.update = () => {
@@ -28,13 +36,6 @@ const Bullet = function (position, onDestroy) {
       this.destroy();
       return;
     }
-
-    enemies.forEach((enemy) => {
-      if (checkCollision(this.mesh, enemy.mesh)) {
-        enemy.destroy();
-        this.destroy();
-      }
-    });
   };
 };
 

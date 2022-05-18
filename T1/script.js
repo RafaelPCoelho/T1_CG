@@ -15,6 +15,7 @@ import Airplane from "./Airplane.js";
 import Plano from "./Plano.js";
 import Camera from "./Camera.js";
 import Enemy from "./Enemy.js";
+import { checkCollision } from "./libs/Collision/index.js";
 
 var stats = new Stats(); // To show FPS information
 var scene = new THREE.Scene(); // Create main scene
@@ -29,18 +30,33 @@ var airplane = new Airplane();
 var plano = new Plano();
 var keyboard = new KeyboardState();
 
-var enemies = [];
+const Enemies = function () {
+  this.enemies = [];
+  this.counter = 0;
 
-var enemySpawner = setInterval(() => {
-  if (airplane.alive)
-    enemies.push(
-      new Enemy(function () {
-        enemies.splice(enemies.length, 1);
-        delete this;
-      })
-    );
-  else clearInterval(enemySpawner);
-}, 1000);
+  this.add = (enemy) => {
+    this.enemies.push(enemy);
+  };
+
+  this.remove = (i) => {
+    this.enemies.splice(i, 1);
+  };
+
+  this.update = (dt) => {
+    this.enemies.forEach((enemy) => {
+      enemy.update();
+    });
+
+    this.counter += 1 * dt;
+
+    if (this.counter > 2000) {
+      this.add(new Enemy(this.enemies.length));
+      this.counter = 0;
+    }
+  };
+};
+
+const enemyManager = new Enemies();
 
 // Listen window size changes
 window.addEventListener(
@@ -77,7 +93,17 @@ function render(time) {
     keyboard.update();
     airplane.update(deltaTime);
     camera.update(deltaTime);
-    enemies.forEach((enemy) => enemy.update());
+    enemyManager.update(deltaTime);
+    airplane.bullets.forEach((bullet, ib) => {
+      enemyManager.enemies.forEach((enemy, ie) => {
+        if (checkCollision(bullet.mesh, enemy.mesh)) {
+          bullet.destroy();
+          enemy.destroy();
+          airplane.bullets.splice(ib, 1);
+          enemyManager.enemies.splice(ie, 1);
+        }
+      });
+    });
   }
 
   stats.update(); // Update FPS
@@ -86,4 +112,4 @@ function render(time) {
   renderer.render(scene, camera.camera); // Render scene
 }
 
-export { scene, camera, keyboard, basicMaterial, airplane, enemies };
+export { scene, camera, keyboard, basicMaterial, airplane, enemyManager };
