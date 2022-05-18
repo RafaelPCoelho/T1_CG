@@ -26,7 +26,7 @@ const Airplane = function () {
     // this.colMat
   );
   // scene.add(this.collisor);
-
+  
   this.bullets = [];
 
   this.init = () => {
@@ -37,7 +37,7 @@ const Airplane = function () {
 
   this.destroy = () => {
     this.alive = false;
-    alert("Morreu, o mamute morreu");
+    alert("Game Over");
     window.location = window.location;
   };
 
@@ -45,25 +45,25 @@ const Airplane = function () {
     var { x, y, z } = this.mesh.position;
     var cam = camera.cameraTransform;
 
-    if (keyboard.pressed("A")) {
+    if (keyboard.pressed("A") || keyboard.pressed("left")) {
       this.vx = -1;
     }
-    if (keyboard.pressed("D")) {
+    if (keyboard.pressed("D") || keyboard.pressed("right")) {
       this.vx = 1;
     }
-    if (keyboard.pressed("W")) {
+    if (keyboard.pressed("W") || keyboard.pressed("up")) {
       this.vz = -2;
     }
-    if (keyboard.pressed("S")) {
+    if (keyboard.pressed("S") || keyboard.pressed("down")) {
       this.vz = 0.5;
     }
-    if (keyboard.up("A") || keyboard.up("D")) {
+    if (keyboard.up("A") || keyboard.up("D") || keyboard.up("right") || keyboard.up("left")) {
       this.vx = 0;
     }
-    if (keyboard.up("W") || keyboard.up("S")) {
+    if (keyboard.up("W") || keyboard.up("S") || keyboard.up("up") || keyboard.up("down")) {
       this.vz = -1;
     }
-    if (keyboard.down("space")) {
+    if (keyboard.down("space") || keyboard.down("ctrl")) {
       var bullet = new Bullet(this.mesh.position, () => {
         this.bullets.splice(this.bullets.length, 1);
       });
