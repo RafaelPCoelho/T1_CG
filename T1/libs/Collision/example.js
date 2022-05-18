@@ -6,6 +6,7 @@ import {
   initCamera,
   InfoBox,
   onWindowResize,
+  degreesToRadians,
 } from "../../../libs/util/util.js";
 import { checkCollision } from "./index.js";
 import KeyboardState from "../../../libs/util/KeyboardState.js";
@@ -92,6 +93,8 @@ function render() {
   if (keyboard.pressed("down")) cubes[0].translateY(-0.5);
   if (keyboard.pressed("space")) cubes[0].translateZ(0.5);
   if (keyboard.pressed("C")) cubes[0].translateZ(-0.5);
+  if (keyboard.pressed("Q")) cubes[0].rotateZ(degreesToRadians(1));
+  if (keyboard.pressed("R")) cubes[0].rotateZ(degreesToRadians(-1));
 
   cubes.forEach((cube, i) => {
     var colliding = cubes.find(

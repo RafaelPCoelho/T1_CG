@@ -3,11 +3,8 @@ import Stats from "../build/jsm/libs/stats.module.js";
 import { TrackballControls } from "../build/jsm/controls/TrackballControls.js";
 import {
   initRenderer,
-  initCamera,
   InfoBox,
   onWindowResize,
-  degreesToRadians,
-  createGroundPlaneWired,
   initDefaultBasicLight,
 } from "../libs/util/util.js";
 import KeyboardState from "../libs/util/KeyboardState.js";
@@ -15,7 +12,7 @@ import Airplane from "./Airplane.js";
 import Plano from "./Plano.js";
 import Camera from "./Camera.js";
 import Enemy from "./Enemy.js";
-import { checkCollision } from "./libs/Collision/index.js";
+import { pushObject } from "./libs/utils/funcs.js";
 
 var stats = new Stats(); // To show FPS information
 var scene = new THREE.Scene(); // Create main scene
@@ -30,33 +27,20 @@ var airplane = new Airplane();
 var plano = new Plano();
 var keyboard = new KeyboardState();
 
-const Enemies = function () {
-  this.enemies = [];
-  this.counter = 0;
+var enemies = {};
 
-  this.add = (enemy) => {
-    this.enemies.push(enemy);
-  };
-
-  this.remove = (i) => {
-    this.enemies.splice(i, 1);
-  };
-
-  this.update = (dt) => {
-    this.enemies.forEach((enemy) => {
-      enemy.update();
+const spawnEnemy = function () {
+  if (airplane.alive) {
+    var key = pushObject(enemies, null);
+    enemies[key] = new Enemy(() => {
+      delete enemies[key];
     });
-
-    this.counter += 1 * dt;
-
-    if (this.counter > 2000) {
-      this.add(new Enemy(this.enemies.length));
-      this.counter = 0;
-    }
-  };
+  } else {
+    clearInterval(this);
+  }
 };
 
-const enemyManager = new Enemies();
+setInterval(spawnEnemy, 1000);
 
 // Listen window size changes
 window.addEventListener(
@@ -82,7 +66,13 @@ function render(time) {
 
   // Limpa o info e reescreve
   info.infoBox.innerHTML = "";
-  info.add(`Ammo: `);
+  info.add(
+    `Ammo: ${
+      airplane.ammo ||
+      `reloading (${(airplane.nextReload - airplane.counter).toFixed(0)}s)`
+    }`
+  );
+  info.addParagraph();
   info.add(`fps: ${fps.toFixed(2)}`);
   info.show();
   // Funcao de Plano Infinito
@@ -93,16 +83,8 @@ function render(time) {
     keyboard.update();
     airplane.update(deltaTime);
     camera.update(deltaTime);
-    enemyManager.update(deltaTime);
-    airplane.bullets.forEach((bullet, ib) => {
-      enemyManager.enemies.forEach((enemy, ie) => {
-        if (checkCollision(bullet.mesh, enemy.mesh)) {
-          bullet.destroy();
-          enemy.destroy();
-          airplane.bullets.splice(ib, 1);
-          enemyManager.enemies.splice(ie, 1);
-        }
-      });
+    Object.values(enemies).forEach((enemy) => {
+      enemy.update();
     });
   }
 
@@ -112,4 +94,4 @@ function render(time) {
   renderer.render(scene, camera.camera); // Render scene
 }
 
-export { scene, camera, keyboard, basicMaterial, airplane, enemyManager };
+export { scene, camera, keyboard, basicMaterial, airplane, enemies };

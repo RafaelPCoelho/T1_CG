@@ -1,8 +1,9 @@
 import * as THREE from "three";
 import { degreesToRadians } from "../libs/util/util.js";
-import { scene, camera, keyboard, enemyManager } from "./script.js";
+import { scene, camera, keyboard } from "./script.js";
 import Bullet from "./Bullet.js";
 import { checkCollision } from "./libs/Collision/index.js";
+import { pushObject } from "./libs/utils/funcs.js";
 
 const Airplane = function () {
   this.radius = 5;
@@ -11,6 +12,14 @@ const Airplane = function () {
   this.vy = 0;
   this.vz = -1;
   this.alive = true;
+  this.ammoPerMag = 10;
+  this.ammo = this.ammoPerMag;
+  this.counter = 0;
+  this.reloadTime = 2;
+  this.nextReload = 0;
+  this.shootDelay = 0.5;
+  this.nextShoot = 0;
+
   this.material = new THREE.MeshLambertMaterial({
     color: "rgb(50, 100, 10)",
   });
@@ -21,15 +30,8 @@ const Airplane = function () {
     new THREE.ConeGeometry(this.radius, this.size),
     this.material
   );
-  // this.mesh.geometry.computeBoundingBox();
-  // console.log(this.mesh.geometry.boundingBox);
-  this.collisor = new THREE.Mesh(
-    new THREE.BoxGeometry(this.radius * 2, this.radius * 2, this.size)
-    // this.colMat
-  );
-  // scene.add(this.collisor);
-  
-  this.bullets = [];
+
+  this.bullets = {};
 
   this.init = () => {
     this.mesh.position.set(0, 50, 80);
@@ -43,7 +45,7 @@ const Airplane = function () {
     window.location = window.location;
   };
 
-  this.update = () => {
+  this.update = (dt) => {
     var { x, y, z } = this.mesh.position;
     var cam = camera.cameraTransform;
 
@@ -59,19 +61,34 @@ const Airplane = function () {
     if (keyboard.pressed("S") || keyboard.pressed("down")) {
       this.vz = 0.5;
     }
-    if (keyboard.up("A") || keyboard.up("D") || keyboard.up("right") || keyboard.up("left")) {
+    if (
+      keyboard.up("A") ||
+      keyboard.up("D") ||
+      keyboard.up("right") ||
+      keyboard.up("left")
+    ) {
       this.vx = 0;
     }
-    if (keyboard.up("W") || keyboard.up("S") || keyboard.up("up") || keyboard.up("down")) {
+    if (
+      keyboard.up("W") ||
+      keyboard.up("S") ||
+      keyboard.up("up") ||
+      keyboard.up("down")
+    ) {
       this.vz = -1;
     }
-    if (keyboard.down("space") || keyboard.down("ctrl")) {
-      var bullet = new Bullet(this.mesh.position, () => {
-        this.bullets.splice(this.bullets.length, 1);
-      });
-      this.bullets.push(bullet);
 
-      console.log(bullet);
+    if (keyboard.down("space") || keyboard.down("ctrl")) {
+      if (this.ammo > 0 && this.counter >= this.nextShoot) {
+        this.ammo--;
+        if (this.ammo == 0) this.nextReload = this.counter + this.reloadTime;
+        this.nextShoot = this.counter + this.shootDelay;
+
+        var key = pushObject(this.bullets, null);
+        this.bullets[key] = new Bullet(this.mesh.position, () => {
+          delete this.bullets[key];
+        });
+      }
     }
 
     this.mesh.position.set(
@@ -83,15 +100,14 @@ const Airplane = function () {
       )
     );
 
-    this.collisor.position.set(
-      this.mesh.position.x,
-      this.mesh.position.y,
-      this.mesh.position.z
-    );
-
-    this.bullets.forEach((bullet) => {
+    Object.values(this.bullets).forEach((bullet) => {
       bullet.update();
     });
+
+    this.counter += dt / 1000;
+    if (this.counter >= this.nextReload && this.ammo == 0) {
+      this.ammo = this.ammoPerMag;
+    }
   };
 
   this.init();

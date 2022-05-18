@@ -1,8 +1,8 @@
 import * as THREE from "three";
-import { degreesToRadians } from "../libs/util/util.js";
-import { scene, camera, airplane, enemyManager } from "./script.js";
+import { checkCollision } from "./libs/Collision/index.js";
+import { scene, camera, airplane } from "./script.js";
 
-const Enemy = function (i) {
+const Enemy = function (onDestroy) {
   this.mesh = new THREE.Mesh(
     new THREE.BoxGeometry(6, 6, 6),
     new THREE.MeshLambertMaterial({
@@ -14,7 +14,6 @@ const Enemy = function (i) {
   this.vz = Math.random();
   this.vz = Math.max(0.4, this.vz);
   this.vz = Math.min(this.vz, 0.7);
-  this.index = i;
 
   this.init = () => {
     // Seta a posição do inimigo com
@@ -30,13 +29,25 @@ const Enemy = function (i) {
   };
 
   this.destroy = () => {
+    if (onDestroy) onDestroy();
     scene.remove(this.mesh);
-    console.log(`Killed enemy ${this.index}`);
+    console.log(`Killed enemy`);
   };
 
   this.update = () => {
     if (camera.cameraTransform.position.z + 140 < this.mesh.position.z) {
       this.destroy();
+    }
+
+    Object.values(airplane.bullets).forEach((bullet) => {
+      if (checkCollision(this.mesh, bullet.mesh)) {
+        bullet.destroy();
+        this.destroy();
+      }
+    });
+
+    if (checkCollision(this.mesh, airplane.mesh)) {
+      airplane.destroy();
     }
   };
 
