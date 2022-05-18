@@ -11,16 +11,21 @@ const Airplane = function () {
   this.vy = 0;
   this.vz = -1;
   this.alive = true;
+  this.material = new THREE.MeshLambertMaterial({
+    color: "rgb(50, 100, 10)",
+  });
+  this.colMat = this.material.clone();
+  this.colMat.wireframe = true;
 
   this.mesh = new THREE.Mesh(
     new THREE.ConeGeometry(this.radius, this.size),
-    new THREE.MeshLambertMaterial({
-      color: "rgb(50, 100, 10)",
-    })
+    this.material
   );
   this.collisor = new THREE.Mesh(
     new THREE.BoxGeometry(this.radius * 2, this.radius * 2, this.size)
+    // this.colMat
   );
+  // scene.add(this.collisor);
 
   this.bullets = [];
 
