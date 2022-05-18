@@ -14,6 +14,8 @@ const Enemy = function (onDestroy) {
   this.vz = Math.random();
   this.vz = Math.max(0.4, this.vz);
   this.vz = Math.min(this.vz, 0.7);
+  this.vy = 0;
+  this.alive = true;
 
   this.init = () => {
     // Seta a posição do inimigo com
@@ -29,12 +31,12 @@ const Enemy = function (onDestroy) {
   };
 
   this.destroy = () => {
-    if (onDestroy) onDestroy();
-    scene.remove(this.mesh);
+    if (!this.alive) return;
+    this.alive = false;
     console.log(`Killed enemy`);
   };
 
-  this.update = () => {
+  this.aliveBehaviour = (dt) => {
     if (camera.cameraTransform.position.z + 140 < this.mesh.position.z) {
       this.destroy();
     }
@@ -48,7 +50,25 @@ const Enemy = function (onDestroy) {
 
     if (checkCollision(this.mesh, airplane.mesh)) {
       airplane.destroy();
+      this.destroy();
     }
+  };
+
+  this.deathBehaviour = (dt) => {
+    if (this.mesh.position.y <= 2) {
+      setTimeout(() => {
+        if (onDestroy) onDestroy();
+        scene.remove(this.mesh);
+      }, 1000);
+    } else {
+      this.vy -= 4.5 * (dt / 1000);
+      this.mesh.translateY(this.vy);
+    }
+  };
+
+  this.update = (dt) => {
+    if (this.alive) this.aliveBehaviour(dt);
+    else this.deathBehaviour(dt);
   };
 
   this.init();

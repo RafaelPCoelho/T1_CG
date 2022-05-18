@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { degreesToRadians } from "../libs/util/util.js";
-import { scene, camera, keyboard } from "./script.js";
+import { scene, camera, keyboard, enemies } from "./script.js";
 import Bullet from "./Bullet.js";
 import { checkCollision } from "./libs/Collision/index.js";
 import { pushObject } from "./libs/utils/funcs.js";
@@ -19,6 +19,8 @@ const Airplane = function () {
   this.nextReload = 0;
   this.shootDelay = 0.5;
   this.nextShoot = 0;
+  this.bullets = {};
+  this.gameOver = false;
 
   this.material = new THREE.MeshLambertMaterial({
     color: "rgb(50, 100, 10)",
@@ -30,22 +32,22 @@ const Airplane = function () {
     new THREE.ConeGeometry(this.radius, this.size),
     this.material
   );
-
-  this.bullets = {};
+  this.mesh.rotateX(degreesToRadians(-90));
 
   this.init = () => {
     this.mesh.position.set(0, 50, 80);
-    this.mesh.rotateX(degreesToRadians(-90));
     scene.add(this.mesh);
   };
 
   this.destroy = () => {
+    if (!this.alive) return;
+
     this.alive = false;
-    alert("Game Over");
-    window.location = window.location;
+    this.vz = 0;
+    this.vy = 2;
   };
 
-  this.update = (dt) => {
+  this.aliveBehaviour = (dt) => {
     var { x, y, z } = this.mesh.position;
     var cam = camera.cameraTransform;
 
@@ -108,6 +110,26 @@ const Airplane = function () {
     if (this.counter >= this.nextReload && this.ammo == 0) {
       this.ammo = this.ammoPerMag;
     }
+  };
+
+  this.deathBehaviour = (dt) => {
+    this.vz -= 4.5 * (dt / 1000);
+    this.vy -= 1 * (dt / 1000);
+
+    this.mesh.translateY(this.vy);
+    this.mesh.translateZ(this.vz);
+    this.mesh.rotateX(-degreesToRadians(35 * (dt / 1000)));
+
+    if (this.mesh.position.y <= 0) {
+      this.gameOver = true;
+      alert("Game Over");
+      window.location.reload();
+    }
+  };
+
+  this.update = (dt) => {
+    if (this.alive) this.aliveBehaviour(dt);
+    else this.deathBehaviour(dt);
   };
 
   this.init();

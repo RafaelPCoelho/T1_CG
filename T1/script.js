@@ -79,12 +79,12 @@ function render(time) {
   plano.update();
 
   // Atualiza componentes passando o deltaTime
-  if (airplane.alive) {
+  if (!airplane.gameOver) {
     keyboard.update();
     airplane.update(deltaTime);
     camera.update(deltaTime);
     Object.values(enemies).forEach((enemy) => {
-      enemy.update();
+      enemy.update(deltaTime);
     });
   }
 

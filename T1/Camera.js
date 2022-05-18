@@ -22,6 +22,8 @@ const Camera = function () {
   };
 
   this.update = (dt) => {
+    if (!airplane.alive) return;
+
     var ds = airplane.mesh.position.x - this.cameraTransform.position.x;
     let v = Math.abs(ds) / (this.dtLerp * (dt || 1));
 
