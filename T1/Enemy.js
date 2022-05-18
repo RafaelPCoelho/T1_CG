@@ -28,14 +28,14 @@ const Enemy = function (onDestroy) {
     scene.add(this.mesh);
   };
 
+  this.destroy = () => {
+    if (onDestroy) onDestroy();
+    scene.remove(this.mesh);
+  };
+
   this.update = () => {
-    if (airplane.mesh.position.z < this.mesh.position.z) {
-      console.log("DESTOI");
-      if (onDestroy) {
-        onDestroy();
-        scene.remove(this.mesh);
-        // delete this;
-      }
+    if (camera.cameraTransform.position.z + 140 < this.mesh.position.z) {
+      this.destroy();
     }
   };
 

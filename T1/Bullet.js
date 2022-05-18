@@ -1,19 +1,40 @@
-import { basicMaterial } from "./script";
+import * as THREE from "three";
+import { basicMaterial, scene, enemies, camera } from "./script.js";
+import { checkCollision } from "./libs/Collision/index.js";
 
-const Bullet = function (position, rotation) {
+const Bullet = function (position, onDestroy) {
   this.mesh = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.5, 0.5, 2),
-    basicMaterial
+    new THREE.BoxGeometry(1, 1, 10),
+    new THREE.MeshStandardMaterial({
+      color: "#ffff00",
+    })
   );
 
-  this.mesh.position.set(position);
-  this.mesh.rotation.set(rotation);
+  this.mesh.position.set(position.x, position.y, position.z);
+  // this.mesh.rotation.set(rotation);
+  scene.add(this.mesh);
 
-  this.speed = 10;
+  this.speed = 5;
+
+  this.destroy = () => {
+    if (onDestroy) onDestroy();
+    scene.remove(this.mesh);
+  };
 
   this.update = () => {
-    var { translateZ } = this.mesh.position;
-    translateZ(this.speed);
+    this.mesh.translateZ(-this.speed);
+
+    if (this.mesh.position.z < camera.cameraTransform.position.z - 250) {
+      this.destroy();
+      return;
+    }
+
+    enemies.forEach((enemy) => {
+      if (checkCollision(this.mesh, enemy.mesh)) {
+        enemy.destroy();
+        this.destroy();
+      }
+    });
   };
 };
 
