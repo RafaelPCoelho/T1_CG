@@ -25,20 +25,20 @@ const Airplane = function () {
   this.material = new THREE.MeshLambertMaterial({
     color: "rgb(50, 100, 10)",
   });
-  this.colMat = this.material.clone();
-  this.colMat.wireframe = true;
 
   this.mesh = new THREE.Mesh(
     new THREE.ConeGeometry(this.radius, this.size),
     this.material
   );
-  this.mesh.rotateX(degreesToRadians(-90));
 
+  // Inicia o avião com as configurações padrão
   this.init = () => {
+    this.mesh.rotateX(degreesToRadians(-90));
     this.mesh.position.set(0, 50, 80);
     scene.add(this.mesh);
   };
 
+  // Define o estado do avião como destruído
   this.destroy = () => {
     if (!this.alive) return;
 
@@ -47,22 +47,16 @@ const Airplane = function () {
     this.vy = 2;
   };
 
+  // Roda o comportamento do avião quando seu estado é: vivo
   this.aliveBehaviour = (dt) => {
     var { x, y, z } = this.mesh.position;
     var cam = camera.cameraTransform;
 
-    if (keyboard.pressed("A") || keyboard.pressed("left")) {
-      this.vx = -1;
-    }
-    if (keyboard.pressed("D") || keyboard.pressed("right")) {
-      this.vx = 1;
-    }
-    if (keyboard.pressed("W") || keyboard.pressed("up")) {
-      this.vz = -2;
-    }
-    if (keyboard.pressed("S") || keyboard.pressed("down")) {
-      this.vz = 0.5;
-    }
+    // Define o comportamento dos controles
+    if (keyboard.pressed("A") || keyboard.pressed("left")) this.vx = -1;
+    if (keyboard.pressed("D") || keyboard.pressed("right")) this.vx = 1;
+    if (keyboard.pressed("W") || keyboard.pressed("up")) this.vz = -2;
+    if (keyboard.pressed("S") || keyboard.pressed("down")) this.vz = 0.5;
     if (
       keyboard.up("A") ||
       keyboard.up("D") ||
@@ -80,9 +74,14 @@ const Airplane = function () {
       this.vz = -1;
     }
 
+    // Enquanto tiver munição e puder atirar
+    // dispara uma nova bala e define um novo tempo
+    // com base no intervalo entre tiros
+    // para poder atirar novamente
     if (keyboard.down("space") || keyboard.down("ctrl")) {
       if (this.ammo > 0 && this.counter >= this.nextShoot) {
         this.ammo--;
+
         if (this.ammo == 0) this.nextReload = this.counter + this.reloadTime;
         this.nextShoot = this.counter + this.shootDelay;
 
@@ -93,6 +92,8 @@ const Airplane = function () {
       }
     }
 
+    // Define a posição do avião, limitando
+    // as laterais e a profundidade
     this.mesh.position.set(
       Math.max(-100, Math.min(100, x + this.vx)),
       y + this.vy,
@@ -102,16 +103,24 @@ const Airplane = function () {
       )
     );
 
+    // Atualiza o estado das balas disparadas
     Object.values(this.bullets).forEach((bullet) => {
       bullet.update();
     });
 
+    // Incrementa o contador do avião, que será
+    // utilizado para comparações de delay
+    // ex: delay entre disparos, delay de recarga...
     this.counter += dt / 1000;
+
+    // Se terminou de recarregar, seta as munições
     if (this.counter >= this.nextReload && this.ammo == 0) {
       this.ammo = this.ammoPerMag;
     }
   };
 
+  // Roda o comportamento do avião quando seu estado é: morto
+  // (derruba o avião e ao encostar no chão, termina o jogo)
   this.deathBehaviour = (dt) => {
     this.vz -= 4.5 * (dt / 1000);
     this.vy -= 1 * (dt / 1000);
@@ -127,6 +136,7 @@ const Airplane = function () {
     }
   };
 
+  // Atualiza a cada frame o estado do avião
   this.update = (dt) => {
     if (this.alive) this.aliveBehaviour(dt);
     else this.deathBehaviour(dt);

@@ -9,24 +9,32 @@ const Bullet = function (position, onDestroy) {
     })
   );
 
-  this.mesh.position.set(position.x, position.y, position.z);
-  // this.mesh.rotation.set(rotation);
-  scene.add(this.mesh);
+  // Inicia a munição e suas propriedades
+  this.init = () => {
+    this.speed = 5;
+    this.mesh.position.set(position.x, position.y, position.z);
+    scene.add(this.mesh);
+  };
 
-  this.speed = 5;
-
+  // Chama o destrutor passado como parametro ( se existir )
+  // para remover a bala da lista e,
+  // posteriormente, remove da cena
   this.destroy = () => {
     if (onDestroy) onDestroy();
     scene.remove(this.mesh);
     console.log(`Killed bullet`);
   };
 
+  // Atualiza o estado da bala e verifica se ela já chegou
+  // no limite do cenário
   this.update = () => {
     this.mesh.translateZ(-this.speed);
 
     if (this.mesh.position.z < camera.cameraTransform.position.z - 250)
       this.destroy();
   };
+
+  this.init();
 };
 
 export default Bullet;

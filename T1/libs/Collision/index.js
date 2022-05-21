@@ -1,9 +1,16 @@
 import * as THREE from "three";
 import { absVec, distVec } from "../utils/vec.js";
 
+// Verifica a colisão entre 4 pontos em um determinado eixo
 const checkCollisionOnAxis = (min1, max1, min2, max2) =>
   min1 < max2 && max1 > min2;
 
+// Calcula a boundingBox de cada corpo, se necessário,
+// e verifica a colisão dos mesmos em cada eixo
+// caso haja colisão, é retornada uma normal
+// em apenas um eixo (1,0,0), (0,1,0) ou (0,0,1)
+// para futuro tratamento físico da reação da colisão
+// em cada corpo
 const checkCollision = (body1, body2) => {
   let normal = new THREE.Vector3();
 

@@ -29,6 +29,7 @@ var keyboard = new KeyboardState();
 
 var enemies = {};
 
+// Função para criar inimigos infinitos de tempo em tempo
 const spawnEnemy = function () {
   if (airplane.alive) {
     var key = pushObject(enemies, null);
@@ -64,7 +65,7 @@ function render(time) {
   timestamp = time;
   fps = 1000 / deltaTime;
 
-  // Limpa o info e reescreve
+  // Limpa o info e reescreve com o fps e a munição
   info.infoBox.innerHTML = "";
   info.add(
     `Ammo: ${
@@ -75,21 +76,22 @@ function render(time) {
   info.addParagraph();
   info.add(`fps: ${fps.toFixed(2)}`);
   info.show();
+
   // Funcao de Plano Infinito
   plano.update();
 
-  // Atualiza componentes passando o deltaTime
+  // Atualiza componentes passando o deltaTime, enquanto o jogo não estiver acabado
   if (!airplane.gameOver) {
     keyboard.update();
     airplane.update(deltaTime);
     camera.update(deltaTime);
+
     Object.values(enemies).forEach((enemy) => {
       enemy.update(deltaTime);
     });
   }
 
   stats.update(); // Update FPS
-  // trackballControls.update() ; // Enable mouse movements
   requestAnimationFrame(render);
   renderer.render(scene, camera.camera); // Render scene
 }

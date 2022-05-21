@@ -30,17 +30,21 @@ const Enemy = function (onDestroy) {
     scene.add(this.mesh);
   };
 
+  // Define o estado do inimigo como morto
   this.destroy = () => {
     if (!this.alive) return;
     this.alive = false;
     console.log(`Killed enemy`);
   };
 
+  // Roda o comportamento do inimigo quando seu estado é: vivo
   this.aliveBehaviour = (dt) => {
+    // Mata o inimigo caso atinja o limite inferior da tela
     if (camera.cameraTransform.position.z + 140 < this.mesh.position.z) {
       this.destroy();
     }
 
+    // Verifica colisão do inimigo com cada bala disparada pelo avião
     Object.values(airplane.bullets).forEach((bullet) => {
       if (checkCollision(this.mesh, bullet.mesh)) {
         bullet.destroy();
@@ -48,12 +52,18 @@ const Enemy = function (onDestroy) {
       }
     });
 
+    // Verifica a colisão do inimigo com o avião
     if (checkCollision(this.mesh, airplane.mesh)) {
       airplane.destroy();
       this.destroy();
     }
   };
 
+  // Roda o comportamento do inimigo quando seu estado é: morto,
+  // derrubando o mesmo até que encoste no chão,
+  // então um temporizador é disparado para eliminá-lo da cena
+  // e seu destrutor ( se passado nos parâmetros ) é chamado
+  // para removê-lo de seu array controlador
   this.deathBehaviour = (dt) => {
     if (this.mesh.position.y <= 2) {
       setTimeout(() => {
@@ -66,6 +76,7 @@ const Enemy = function (onDestroy) {
     }
   };
 
+  // Atualiza a cada frame o estado do inimigo
   this.update = (dt) => {
     if (this.alive) this.aliveBehaviour(dt);
     else this.deathBehaviour(dt);
