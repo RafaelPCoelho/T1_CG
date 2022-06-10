@@ -29,7 +29,7 @@ var plano = new Plano();
 var keyboard = new KeyboardState();
 
 var cannonRange = 1000;
-var cannons = Array(10)
+var cannons = Array(5)
   .fill(1)
   .map(
     () =>

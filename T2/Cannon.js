@@ -1,7 +1,7 @@
 import * as THREE from "three";
-import { pushObject } from "./libs/utils/funcs.js";
+import { iterateCalling, pushObject } from "./libs/utils/funcs.js";
 import Missile from "./Missile.js";
-import { scene } from "./script.js";
+import { scene, camera } from "./script.js";
 
 const Cannon = function (position) {
   this.geometry = new THREE.BoxGeometry(10, 2, 10);
@@ -10,8 +10,8 @@ const Cannon = function (position) {
 
   this.alive = true;
   this.counter = 0;
-  this.shootInterval = 1;
-  this.nextShoot = this.shootInterval;
+  this.shootInterval = 3.5;
+  this.nextShoot = 0;
 
   this.missiles = {};
 
@@ -28,17 +28,25 @@ const Cannon = function (position) {
     // Shoot
     if (this.counter > this.nextShoot) {
       this.nextShoot = this.counter + this.shootInterval;
-      pushObject(this.missiles, new Missile(this.mesh.position));
+      var key = pushObject(this.missiles, null);
+      this.missiles[key] = new Missile(this.mesh.position, () => {
+        delete this.missiles[key];
+      });
     }
-
-    Object.values(this.missiles).forEach((missile) => {
-      missile.update(dt);
-    });
   };
 
   this.update = (dt) => {
-    if (this.alive) this.aliveBehaviour(dt);
-    else this.deathBehaviour(dt);
+    var farFromCamera = this.mesh.position.distanceTo(
+      camera.cameraTransform.position
+    );
+
+    if (this.alive) {
+      if (farFromCamera < 300) {
+        this.aliveBehaviour(dt);
+      }
+    } else this.deathBehaviour(dt);
+
+    iterateCalling(Object.values(this.missiles), "update", dt);
   };
 
   this.init();
