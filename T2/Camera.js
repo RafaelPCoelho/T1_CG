@@ -14,6 +14,10 @@ const Camera = function () {
   this.ticker = 0;
   this.dtLerp = 1000;
 
+  this.died = false;
+  this.deathTimer = 0;
+  this.delayAfterDie = 2;
+
   // Inicia a camera com sua posição inicial
   this.init = () => {
     this.cameraTransform.position.set(0, 20, 0);
@@ -21,11 +25,18 @@ const Camera = function () {
     scene.add(this.cameraTransform);
   };
 
+  this.deathBehaviour = (dt) => {
+    if (!this.died) {
+      this.died = true;
+    } else if (this.deathTimer < this.delayAfterDie) {
+      this.deathTimer += dt / 1000;
+      this.cameraTransform.translateZ(this.vz);
+    }
+  };
+
   // Atualiza o estado da camera, movimentando-a e,
   // seguindo lentamente a posição do avião ( no eixo X )
-  this.update = (dt) => {
-    if (!airplane.alive) return;
-
+  this.aliveBehaviour = (dt) => {
     // Salva a distância da camera para o avião ( em X )
     var ds = airplane.mesh.position.x - this.cameraTransform.position.x;
     // Calcula quantos passos ( velocidade ) serão necessários
@@ -52,6 +63,11 @@ const Camera = function () {
     this.ticker = lerp(this.ticker, 0, this.ticker / 2);
 
     this.cameraTransform.translateZ(this.vz);
+  };
+
+  this.update = (dt) => {
+    if (!airplane.alive) this.deathBehaviour(dt);
+    else this.aliveBehaviour(dt);
   };
 
   this.init();

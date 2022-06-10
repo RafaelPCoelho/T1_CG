@@ -10,3 +10,11 @@ export const pushObject = (object, value) => {
   object[next] = value;
   return next;
 };
+
+export const iterateCalling = (
+  targetArray = [],
+  functionName = "",
+  ...params
+) => {
+  targetArray.forEach((value) => value[functionName](params));
+};

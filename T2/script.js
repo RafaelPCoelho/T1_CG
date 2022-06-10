@@ -12,7 +12,8 @@ import Airplane from "./Airplane.js";
 import Plano from "./Plano.js";
 import Camera from "./Camera.js";
 import Enemy from "./Enemy.js";
-import { pushObject } from "./libs/utils/funcs.js";
+import Cannon from "./Cannon.js";
+import { iterateCalling, pushObject } from "./libs/utils/funcs.js";
 
 var stats = new Stats(); // To show FPS information
 var scene = new THREE.Scene(); // Create main scene
@@ -26,6 +27,20 @@ var camera = new Camera();
 var airplane = new Airplane();
 var plano = new Plano();
 var keyboard = new KeyboardState();
+
+var cannonRange = 1000;
+var cannons = Array(10)
+  .fill(1)
+  .map(
+    () =>
+      new Cannon(
+        new THREE.Vector3(
+          -cannonRange / 2 + Math.random() * cannonRange,
+          2,
+          Math.random() * -cannonRange
+        )
+      )
+  );
 
 var enemies = {};
 
@@ -89,6 +104,8 @@ function render(time) {
     Object.values(enemies).forEach((enemy) => {
       enemy.update(deltaTime);
     });
+
+    iterateCalling(cannons, "update", deltaTime);
   }
 
   stats.update(); // Update FPS
