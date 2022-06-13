@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { degreesToRadians } from "../libs/util/util.js";
 import { scene } from "./script.js";
 
-const Torpedo = function (position, onDestroy) {
+const Torpedo = function (position, angle, onDestroy) {
   this.mesh = new THREE.Mesh(
     new THREE.BoxGeometry(1, 1, 5),
     new THREE.MeshStandardMaterial()
@@ -11,7 +11,7 @@ const Torpedo = function (position, onDestroy) {
   this.init = () => {
     scene.add(this.mesh);
     this.mesh.position.copy(position);
-    this.mesh.rotateX(degreesToRadians(-15));
+    this.mesh.rotateX(angle);
   };
 
   this.destroy = () => {

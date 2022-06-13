@@ -5,6 +5,7 @@ import Bullet from "./Bullet.js";
 import { checkCollision } from "./libs/Collision/index.js";
 import { iterateCalling, pushObject } from "./libs/utils/funcs.js";
 import Torpedo from "./Torpedo.js";
+import TargetProjection from "./TargetProjection.js";
 
 const Airplane = function () {
   this.radius = 5;
@@ -23,6 +24,8 @@ const Airplane = function () {
   this.bullets = {};
   this.torpedos = {};
   this.gameOver = false;
+  this.torpedoMark = null;
+  this.torpedoAngle = degreesToRadians(30);
 
   this.material = new THREE.MeshLambertMaterial({
     color: "rgb(50, 100, 10)",
@@ -38,6 +41,11 @@ const Airplane = function () {
     this.mesh.rotateX(degreesToRadians(-90));
     this.mesh.position.set(0, 50, 80);
     scene.add(this.mesh);
+
+    this.torpedoMark = new TargetProjection(
+      this.mesh.position,
+      this.torpedoAngle
+    );
   };
 
   // Define o estado do avião como destruído
@@ -67,9 +75,13 @@ const Airplane = function () {
 
   this.torpedo = () => {
     let key = pushObject(this.torpedos, null);
-    this.torpedos[key] = new Torpedo(this.mesh.position, () => {
-      delete this.torpedos[key];
-    });
+    this.torpedos[key] = new Torpedo(
+      this.mesh.position,
+      -this.torpedoAngle,
+      () => {
+        delete this.torpedos[key];
+      }
+    );
   };
 
   // Roda o comportamento do avião quando seu estado é: vivo
@@ -123,6 +135,8 @@ const Airplane = function () {
     // Atualiza o estado das balas e torpedos disparados
     iterateCalling(Object.values(this.bullets), "update", dt);
     iterateCalling(Object.values(this.torpedos), "update", dt);
+
+    if (this.torpedoMark) this.torpedoMark.update(dt);
   };
 
   // Roda o comportamento do avião quando seu estado é: morto
