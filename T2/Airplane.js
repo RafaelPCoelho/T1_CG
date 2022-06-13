@@ -3,7 +3,8 @@ import { degreesToRadians } from "../libs/util/util.js";
 import { scene, camera, keyboard, enemies } from "./script.js";
 import Bullet from "./Bullet.js";
 import { checkCollision } from "./libs/Collision/index.js";
-import { pushObject } from "./libs/utils/funcs.js";
+import { iterateCalling, pushObject } from "./libs/utils/funcs.js";
+import Torpedo from "./Torpedo.js";
 
 const Airplane = function () {
   this.radius = 5;
@@ -20,6 +21,7 @@ const Airplane = function () {
   this.shootDelay = 0.5;
   this.nextShoot = 0;
   this.bullets = {};
+  this.torpedos = {};
   this.gameOver = false;
 
   this.material = new THREE.MeshLambertMaterial({
@@ -45,6 +47,29 @@ const Airplane = function () {
     this.alive = false;
     this.vz = 0;
     this.vy = 2;
+  };
+
+  // Enquanto tiver munição e puder atirar dispara uma nova bala e define um novo tempo
+  // com base no intervalo entre tiros para poder atirar novamente
+  this.shoot = () => {
+    if (this.ammo > 0 && this.counter >= this.nextShoot) {
+      this.ammo--;
+
+      if (this.ammo == 0) this.nextReload = this.counter + this.reloadTime;
+      this.nextShoot = this.counter + this.shootDelay;
+
+      var key = pushObject(this.bullets, null);
+      this.bullets[key] = new Bullet(this.mesh.position, () => {
+        delete this.bullets[key];
+      });
+    }
+  };
+
+  this.torpedo = () => {
+    let key = pushObject(this.torpedos, null);
+    this.torpedos[key] = new Torpedo(this.mesh.position, () => {
+      delete this.torpedos[key];
+    });
   };
 
   // Roda o comportamento do avião quando seu estado é: vivo
@@ -73,27 +98,10 @@ const Airplane = function () {
     ) {
       this.vz = -1;
     }
+    if (keyboard.down("T")) this.torpedo();
+    if (keyboard.down("space") || keyboard.down("ctrl")) this.shoot();
 
-    // Enquanto tiver munição e puder atirar
-    // dispara uma nova bala e define um novo tempo
-    // com base no intervalo entre tiros
-    // para poder atirar novamente
-    if (keyboard.down("space") || keyboard.down("ctrl")) {
-      if (this.ammo > 0 && this.counter >= this.nextShoot) {
-        this.ammo--;
-
-        if (this.ammo == 0) this.nextReload = this.counter + this.reloadTime;
-        this.nextShoot = this.counter + this.shootDelay;
-
-        var key = pushObject(this.bullets, null);
-        this.bullets[key] = new Bullet(this.mesh.position, () => {
-          delete this.bullets[key];
-        });
-      }
-    }
-
-    // Define a posição do avião, limitando
-    // as laterais e a profundidade
+    // Define a posição do avião, limitando as laterais e a profundidade
     this.mesh.position.set(
       Math.max(-100, Math.min(100, x + this.vx)),
       y + this.vy,
@@ -103,13 +111,7 @@ const Airplane = function () {
       )
     );
 
-    // Atualiza o estado das balas disparadas
-    Object.values(this.bullets).forEach((bullet) => {
-      bullet.update();
-    });
-
-    // Incrementa o contador do avião, que será
-    // utilizado para comparações de delay
+    // Incrementa o contador do avião, que será utilizado para comparações de delay
     // ex: delay entre disparos, delay de recarga...
     this.counter += dt / 1000;
 
@@ -117,6 +119,10 @@ const Airplane = function () {
     if (this.counter >= this.nextReload && this.ammo == 0) {
       this.ammo = this.ammoPerMag;
     }
+
+    // Atualiza o estado das balas e torpedos disparados
+    iterateCalling(Object.values(this.bullets), "update", dt);
+    iterateCalling(Object.values(this.torpedos), "update", dt);
   };
 
   // Roda o comportamento do avião quando seu estado é: morto

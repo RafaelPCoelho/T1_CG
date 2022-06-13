@@ -15,6 +15,7 @@ const Cannon = function (position) {
 
   this.missiles = {};
 
+  // Inicia a posicao com base no parametro position
   this.init = () => {
     scene.add(this.mesh);
     if (position) this.mesh.position.copy(position);
@@ -22,12 +23,15 @@ const Cannon = function (position) {
   };
 
   this.deathBehaviour = (dt) => {};
+
+  // Executa comportamento do canhao enquanto vivo
   this.aliveBehaviour = (dt) => {
     this.counter += dt / 1000;
 
-    // Shoot
+    // Sempre que puder atirar, reseta o contador e atira
     if (this.counter > this.nextShoot) {
       this.nextShoot = this.counter + this.shootInterval;
+
       var key = pushObject(this.missiles, null);
       this.missiles[key] = new Missile(this.mesh.position, () => {
         delete this.missiles[key];
@@ -40,12 +44,14 @@ const Cannon = function (position) {
       camera.cameraTransform.position
     );
 
+    // Realiza o comportamento apenas se estiver vivo e próximo do avião
     if (this.alive) {
       if (farFromCamera < 300) {
         this.aliveBehaviour(dt);
       }
     } else this.deathBehaviour(dt);
 
+    // Chama update de todos os mísseis
     iterateCalling(Object.values(this.missiles), "update", dt);
   };
 
