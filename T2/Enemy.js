@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { checkCollision } from "./libs/Collision/index.js";
-import { scene, camera, airplane } from "./script.js";
+import { scene, camera, airplane, game } from "./script.js";
 
 const Enemy = function (onDestroy) {
   this.mesh = new THREE.Mesh(
@@ -45,7 +45,7 @@ const Enemy = function (onDestroy) {
     }
 
     // Verifica colisão do inimigo com cada bala disparada pelo avião
-    Object.values(airplane.bullets).forEach((bullet) => {
+    Object.values(airplane.bullets.entities).forEach((bullet) => {
       if (checkCollision(this.mesh, bullet.mesh)) {
         bullet.destroy();
         this.destroy();
@@ -53,10 +53,11 @@ const Enemy = function (onDestroy) {
     });
 
     // Verifica a colisão do inimigo com o avião
-    if (checkCollision(this.mesh, airplane.mesh)) {
-      airplane.destroy();
-      this.destroy();
-    }
+    if (game.gamemode == game.GAMEMODES.SURVIVAL)
+      if (checkCollision(this.mesh, airplane.mesh)) {
+        airplane.destroy();
+        this.destroy();
+      }
   };
 
   // Roda o comportamento do inimigo quando seu estado é: morto,

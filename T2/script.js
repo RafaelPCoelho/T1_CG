@@ -1,6 +1,5 @@
 import * as THREE from "three";
 import Stats from "../build/jsm/libs/stats.module.js";
-import { TrackballControls } from "../build/jsm/controls/TrackballControls.js";
 import {
   initRenderer,
   InfoBox,
@@ -13,7 +12,9 @@ import Plano from "./Plano.js";
 import Camera from "./Camera.js";
 import Enemy from "./Enemy.js";
 import Cannon from "./Cannon.js";
-import { iterateCalling, pushObject } from "./libs/utils/funcs.js";
+import EntityList from "./libs/EntityList.js";
+import Ticker from "./libs/Ticker.js";
+import Game from "./utils/Game.js";
 
 var stats = new Stats(); // To show FPS information
 var scene = new THREE.Scene(); // Create main scene
@@ -23,40 +24,25 @@ const basicMaterial = new THREE.MeshLambertMaterial({
   color: "rgb(255, 0, 0)",
 });
 
+var keyboard = new KeyboardState();
 var camera = new Camera();
 var airplane = new Airplane();
 var plano = new Plano();
-var keyboard = new KeyboardState();
+var game = new Game();
 
-var cannonRange = 1000;
-var cannons = Array(5)
-  .fill(1)
-  .map(
-    () =>
-      new Cannon(
-        new THREE.Vector3(
-          -cannonRange / 2 + Math.random() * cannonRange,
-          2,
-          Math.random() * -cannonRange
-        )
-      )
+var cannons = new EntityList(Cannon);
+var cannonTicker = new Ticker(8000, () => {
+  cannons.add(
+    new THREE.Vector3(
+      -300 / 2 + Math.random() * 300,
+      2,
+      airplane.mesh.position.z - 800
+    )
   );
+});
 
-var enemies = {};
-
-// Função para criar inimigos infinitos de tempo em tempo
-const spawnEnemy = function () {
-  if (airplane.alive) {
-    var key = pushObject(enemies, null);
-    enemies[key] = new Enemy(() => {
-      delete enemies[key];
-    });
-  } else {
-    clearInterval(this);
-  }
-};
-
-setInterval(spawnEnemy, 1000);
+var enemies = new EntityList(Enemy);
+var enemyTicker = new Ticker(3000, enemies.add);
 
 // Listen window size changes
 window.addEventListener(
@@ -80,8 +66,16 @@ function render(time) {
   timestamp = time;
   fps = 1000 / deltaTime;
 
+  enemyTicker.update(deltaTime);
+  cannonTicker.update(deltaTime);
+
   // Limpa o info e reescreve com o fps e a munição
   info.infoBox.innerHTML = "";
+  info.add(
+    `MODO ${
+      game.gamemode == game.GAMEMODES.SURVIVAL ? "SOBREVIVENCIA" : "CRIATIVO"
+    }`
+  );
   info.add(
     `Ammo: ${
       airplane.ammo ||
@@ -92,6 +86,9 @@ function render(time) {
   info.add(`fps: ${fps.toFixed(2)}`);
   info.show();
 
+  // Atualiza o jogo
+  game.update(deltaTime);
+
   // Funcao de Plano Infinito
   plano.update();
 
@@ -101,11 +98,8 @@ function render(time) {
     airplane.update(deltaTime);
     camera.update(deltaTime);
 
-    Object.values(enemies).forEach((enemy) => {
-      enemy.update(deltaTime);
-    });
-
-    iterateCalling(cannons, "update", deltaTime);
+    enemies.update(deltaTime);
+    cannons.update(deltaTime);
   }
 
   stats.update(); // Update FPS
@@ -113,4 +107,13 @@ function render(time) {
   renderer.render(scene, camera.camera); // Render scene
 }
 
-export { scene, camera, keyboard, basicMaterial, airplane, enemies };
+export {
+  scene,
+  camera,
+  keyboard,
+  basicMaterial,
+  airplane,
+  enemies,
+  cannons,
+  game,
+};

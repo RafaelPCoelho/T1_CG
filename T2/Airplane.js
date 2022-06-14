@@ -1,11 +1,10 @@
 import * as THREE from "three";
 import { degreesToRadians } from "../libs/util/util.js";
-import { scene, camera, keyboard, enemies } from "./script.js";
+import { scene, camera, keyboard, enemies, game } from "./script.js";
 import Bullet from "./Bullet.js";
-import { checkCollision } from "./libs/Collision/index.js";
-import { iterateCalling, pushObject } from "./libs/utils/funcs.js";
 import Torpedo from "./Torpedo.js";
 import TargetProjection from "./TargetProjection.js";
+import EntityList from "./libs/EntityList.js";
 
 const Airplane = function () {
   this.radius = 5;
@@ -21,11 +20,11 @@ const Airplane = function () {
   this.nextReload = 0;
   this.shootDelay = 0.5;
   this.nextShoot = 0;
-  this.bullets = {};
-  this.torpedos = {};
+  this.bullets = new EntityList(Bullet);
+  this.torpedos = new EntityList(Torpedo);
   this.gameOver = false;
   this.torpedoMark = null;
-  this.torpedoAngle = degreesToRadians(30);
+  this.torpedoAngle = degreesToRadians(20);
 
   this.material = new THREE.MeshLambertMaterial({
     color: "rgb(50, 100, 10)",
@@ -66,22 +65,12 @@ const Airplane = function () {
       if (this.ammo == 0) this.nextReload = this.counter + this.reloadTime;
       this.nextShoot = this.counter + this.shootDelay;
 
-      var key = pushObject(this.bullets, null);
-      this.bullets[key] = new Bullet(this.mesh.position, () => {
-        delete this.bullets[key];
-      });
+      this.bullets.add(this.mesh.position);
     }
   };
 
   this.torpedo = () => {
-    let key = pushObject(this.torpedos, null);
-    this.torpedos[key] = new Torpedo(
-      this.mesh.position,
-      -this.torpedoAngle,
-      () => {
-        delete this.torpedos[key];
-      }
-    );
+    this.torpedos.add(this.mesh.position, -this.torpedoAngle);
   };
 
   // Roda o comportamento do avião quando seu estado é: vivo
@@ -93,7 +82,9 @@ const Airplane = function () {
     if (keyboard.pressed("A") || keyboard.pressed("left")) this.vx = -1;
     if (keyboard.pressed("D") || keyboard.pressed("right")) this.vx = 1;
     if (keyboard.pressed("W") || keyboard.pressed("up")) this.vz = -2;
-    if (keyboard.pressed("S") || keyboard.pressed("down")) this.vz = 0.5;
+    if (keyboard.pressed("S") || keyboard.pressed("down"))
+      if (game.gamemode == game.GAMEMODES.SURVIVAL) this.vz = 0.5;
+      else this.vz = 2;
     if (
       keyboard.up("A") ||
       keyboard.up("D") ||
@@ -108,7 +99,8 @@ const Airplane = function () {
       keyboard.up("up") ||
       keyboard.up("down")
     ) {
-      this.vz = -1;
+      if (game.gamemode == game.GAMEMODES.SURVIVAL) this.vz = -1;
+      else this.vz = 0;
     }
     if (keyboard.down("T")) this.torpedo();
     if (keyboard.down("space") || keyboard.down("ctrl")) this.shoot();
@@ -133,8 +125,8 @@ const Airplane = function () {
     }
 
     // Atualiza o estado das balas e torpedos disparados
-    iterateCalling(Object.values(this.bullets), "update", dt);
-    iterateCalling(Object.values(this.torpedos), "update", dt);
+    this.torpedos.update(dt);
+    this.bullets.update(dt);
 
     if (this.torpedoMark) this.torpedoMark.update(dt);
   };

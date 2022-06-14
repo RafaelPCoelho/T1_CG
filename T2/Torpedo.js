@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { degreesToRadians } from "../libs/util/util.js";
-import { scene } from "./script.js";
+import { cannons, enemies, scene } from "./script.js";
+import { checkCollision } from "./libs/Collision/index.js";
 
 const Torpedo = function (position, angle, onDestroy) {
   this.mesh = new THREE.Mesh(

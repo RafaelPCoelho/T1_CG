@@ -1,9 +1,10 @@
 import * as THREE from "three";
-import { iterateCalling, pushObject } from "./libs/utils/funcs.js";
+import { checkCollision } from "./libs/Collision/index.js";
+import EntityList from "./libs/EntityList.js";
 import Missile from "./Missile.js";
-import { scene, camera } from "./script.js";
+import { scene, camera, airplane } from "./script.js";
 
-const Cannon = function (position) {
+const Cannon = function (position, onDestroy) {
   this.geometry = new THREE.BoxGeometry(10, 2, 10);
   this.material = new THREE.MeshStandardMaterial();
   this.mesh = new THREE.Mesh(this.geometry, this.material);
@@ -13,7 +14,7 @@ const Cannon = function (position) {
   this.shootInterval = 3.5;
   this.nextShoot = 0;
 
-  this.missiles = {};
+  this.missiles = new EntityList(Missile);
 
   // Inicia a posicao com base no parametro position
   this.init = () => {
@@ -22,7 +23,16 @@ const Cannon = function (position) {
     else this.mesh.position.set(0, 1, -200);
   };
 
-  this.deathBehaviour = (dt) => {};
+  this.destroy = () => {
+    this.alive = false;
+    scene.remove(this.mesh);
+  };
+
+  this.deathBehaviour = (dt) => {
+    if (this.missiles.isEmpty()) {
+      if (onDestroy) onDestroy();
+    }
+  };
 
   // Executa comportamento do canhao enquanto vivo
   this.aliveBehaviour = (dt) => {
@@ -32,11 +42,15 @@ const Cannon = function (position) {
     if (this.counter > this.nextShoot) {
       this.nextShoot = this.counter + this.shootInterval;
 
-      var key = pushObject(this.missiles, null);
-      this.missiles[key] = new Missile(this.mesh.position, () => {
-        delete this.missiles[key];
-      });
+      this.missiles.add(this.mesh.position);
     }
+
+    Object.values(airplane.torpedos.entities).forEach((torpedo) => {
+      if (checkCollision(this.mesh, torpedo.mesh)) {
+        torpedo.destroy();
+        this.destroy();
+      }
+    });
   };
 
   this.update = (dt) => {
@@ -52,7 +66,7 @@ const Cannon = function (position) {
     } else this.deathBehaviour(dt);
 
     // Chama update de todos os mísseis
-    iterateCalling(Object.values(this.missiles), "update", dt);
+    this.missiles.update(dt);
   };
 
   this.init();
