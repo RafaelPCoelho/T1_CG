@@ -31,18 +31,9 @@ var plano = new Plano();
 var game = new Game();
 
 var cannons = new EntityList(Cannon);
-var cannonTicker = new Ticker(8000, () => {
-  cannons.add(
-    new THREE.Vector3(
-      -300 / 2 + Math.random() * 300,
-      2,
-      airplane.mesh.position.z - 800
-    )
-  );
-});
-
 var enemies = new EntityList(Enemy);
-var enemyTicker = new Ticker(3000, enemies.add);
+
+game.loadLevel(1);
 
 // Listen window size changes
 window.addEventListener(
@@ -65,9 +56,6 @@ function render(time) {
   deltaTime = time - timestamp;
   timestamp = time;
   fps = 1000 / deltaTime;
-
-  enemyTicker.update(deltaTime);
-  cannonTicker.update(deltaTime);
 
   // Limpa o info e reescreve com o fps e a munição
   info.infoBox.innerHTML = "";

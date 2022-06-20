@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { checkCollision } from "./libs/Collision/index.js";
 import { scene, camera, airplane, game } from "./script.js";
 
-const Enemy = function (onDestroy) {
+const Enemy = function (position, movement = "vert", onDestroy) {
   this.mesh = new THREE.Mesh(
     new THREE.BoxGeometry(6, 6, 6),
     new THREE.MeshLambertMaterial({
@@ -10,10 +10,10 @@ const Enemy = function (onDestroy) {
     })
   );
 
-  this.vx = Math.random();
+  this.dx = Math.round(Math.random()) * 2 - 1;
+  this.vx = Math.random() * 20 + 20;
   this.vz = Math.random();
-  this.vz = Math.max(0.4, this.vz);
-  this.vz = Math.min(this.vz, 0.7);
+  this.vz = Math.max(0.4, Math.min(this.vz, 0.7));
   this.vy = 0;
   this.alive = true;
 
@@ -22,11 +22,7 @@ const Enemy = function (onDestroy) {
     // x aleatorio
     // y ( altura ) fixa
     // z proporcional ao tamanho da tela em relacao a rotacao da camera
-    this.mesh.position.set(
-      -100 + Math.random() * 200,
-      50,
-      airplane.mesh.position.z - window.innerHeight * Math.cos(camera.theta)
-    );
+    this.mesh.position.copy(position);
     scene.add(this.mesh);
   };
 
@@ -35,6 +31,27 @@ const Enemy = function (onDestroy) {
     if (!this.alive) return;
     this.alive = false;
     console.log(`Killed enemy`);
+  };
+
+  // Movimenta o inimigo de acordo com o parametro passado
+  this.move = (dt) => {
+    switch (movement) {
+      case "vert": {
+        break;
+      }
+
+      case "horz": {
+        if (this.mesh.position.x >= game.BOUNDS.x) this.dx = -1;
+        else if (this.mesh.position.x <= -game.BOUNDS.x) this.dx = 1;
+
+        this.mesh.translateX(this.vx * this.dx * (dt / 1000));
+        break;
+      }
+
+      case "arc": {
+        break;
+      }
+    }
   };
 
   // Roda o comportamento do inimigo quando seu estado é: vivo
@@ -58,6 +75,8 @@ const Enemy = function (onDestroy) {
         airplane.destroy();
         this.destroy();
       }
+
+    this.move(dt);
   };
 
   // Roda o comportamento do inimigo quando seu estado é: morto,

@@ -107,7 +107,7 @@ const Airplane = function () {
 
     // Define a posição do avião, limitando as laterais e a profundidade
     this.mesh.position.set(
-      Math.max(-100, Math.min(100, x + this.vx)),
+      Math.max(-game.BOUNDS.x, Math.min(game.BOUNDS.x, x + this.vx)),
       y + this.vy,
       Math.max(
         -100 + cam.position.z,
