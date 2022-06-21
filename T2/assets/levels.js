@@ -11,11 +11,11 @@ export default {
        * air - Avião
        * ground - Lança misseis terrestre
        **/
-      { type: ENEMIES.AIRPLANE, x: 0, z: -250, movement: MOVEMENTS.HORIZONTAL },
+      { type: ENEMIES.AIRPLANE, x: 0, z: -250, movement: MOVEMENTS.ARC },
       { type: ENEMIES.AIRPLANE, x: -30, z: -550 },
       { type: ENEMIES.AIRPLANE, x: 20, z: -850 },
 
-      { type: ENEMIES.AIRPLANE, x: 10, z: -1150 },
+      { type: ENEMIES.AIRPLANE, x: 10, z: -1150, movement: MOVEMENTS.ARC },
       { type: ENEMIES.AIRPLANE, x: -20, z: -1300 },
       { type: ENEMIES.AIRPLANE, x: -5, z: -1450 },
 
