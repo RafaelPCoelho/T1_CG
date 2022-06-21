@@ -36,7 +36,7 @@ const Airplane = function () {
     this.aviao = null;
     loader.load(
       "./assets/aviaoGLTF.gltf",
-      function (gltf) {
+      (gltf) => {
         this.aviao = gltf.scene;
         this.aviao.rotateY(degreesToRadians(-180));
         this.aviao.traverse(function (child) {
