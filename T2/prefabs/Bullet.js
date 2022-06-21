@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { scene, camera } from "./script.js";
+import { scene, camera } from "../script.js";
 
 const Bullet = function (position, onDestroy) {
   this.mesh = new THREE.Mesh(

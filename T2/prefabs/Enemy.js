@@ -1,8 +1,9 @@
 import * as THREE from "three";
-import { checkCollision } from "./libs/Collision/index.js";
-import { scene, camera, airplane, game } from "./script.js";
+import { checkCollision } from "../libs/Collision/index.js";
+import { scene, camera, airplane, game } from "../script.js";
+import { MAP, MOVEMENTS } from "../utils/Consts.js";
 
-const Enemy = function (position, movement = "vert", onDestroy) {
+const Enemy = function (position, movement = MOVEMENTS.VERTICAL, onDestroy) {
   this.mesh = new THREE.Mesh(
     new THREE.BoxGeometry(6, 6, 6),
     new THREE.MeshLambertMaterial({
@@ -36,19 +37,19 @@ const Enemy = function (position, movement = "vert", onDestroy) {
   // Movimenta o inimigo de acordo com o parametro passado
   this.move = (dt) => {
     switch (movement) {
-      case "vert": {
+      case MOVEMENTS.VERTICAL: {
         break;
       }
 
-      case "horz": {
-        if (this.mesh.position.x >= game.BOUNDS.x) this.dx = -1;
-        else if (this.mesh.position.x <= -game.BOUNDS.x) this.dx = 1;
+      case MOVEMENTS.HORIZONTAL: {
+        if (this.mesh.position.x >= MAP.BOUND_X) this.dx = -1;
+        else if (this.mesh.position.x <= -MAP.BOUND_X) this.dx = 1;
 
         this.mesh.translateX(this.vx * this.dx * (dt / 1000));
         break;
       }
 
-      case "arc": {
+      case MOVEMENTS.ARC: {
         break;
       }
     }
@@ -70,11 +71,10 @@ const Enemy = function (position, movement = "vert", onDestroy) {
     });
 
     // Verifica a colisão do inimigo com o avião
-    if (game.gamemode == game.GAMEMODES.SURVIVAL)
-      if (checkCollision(this.mesh, airplane.mesh)) {
-        airplane.destroy();
-        this.destroy();
-      }
+    if (checkCollision(this.mesh, airplane.mesh)) {
+      airplane.destroy();
+      this.destroy();
+    }
 
     this.move(dt);
   };

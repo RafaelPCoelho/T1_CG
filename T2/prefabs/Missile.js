@@ -1,6 +1,6 @@
 import * as THREE from "three";
-import { distVec } from "./libs/utils/vec.js";
-import { airplane, camera, scene } from "./script.js";
+import { distVec } from "../libs/utils/vec.js";
+import { airplane, camera, scene } from "../script.js";
 
 const Missile = function (position, onDestroy) {
   this.geometry = new THREE.BoxGeometry(2, 2, 2);

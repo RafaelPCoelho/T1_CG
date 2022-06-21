@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { clamp, lerp, slerp } from "./libs/utils/math.js";
 import { initCamera, radiansToDegrees } from "../libs/util/util.js";
 import { airplane, game, scene } from "./script.js";
+import { GAMEMODES } from "./utils/Consts.js";
 
 const Camera = function () {
   this.vz = -1;
@@ -58,7 +59,7 @@ const Camera = function () {
         this.tickerX
       ),
       this.cameraTransform.position.y,
-      game.gamemode == game.GAMEMODES.SURVIVAL
+      game.gamemode == GAMEMODES.SURVIVAL
         ? this.cameraTransform.position.z
         : slerp(
             this.cameraTransform.position.z,
@@ -76,7 +77,7 @@ const Camera = function () {
     this.tickerZ = lerp(this.tickerZ, 0, this.tickerZ / 2);
 
     // Movimenta a camera se estiver no modo sobrevivencia
-    if (game.gamemode == game.GAMEMODES.SURVIVAL)
+    if (game.gamemode == GAMEMODES.SURVIVAL)
       this.cameraTransform.translateZ(this.vz);
   };
 

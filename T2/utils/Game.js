@@ -1,56 +1,70 @@
 import * as THREE from "three";
-import { airplane, cannons, enemies, keyboard } from "../script.js";
-import LEVELS from "../assets/levels.js";
+import { airplane, cannons, enemies, keyboard, items } from "../script.js";
+import inputLevels from "../assets/levels.js";
+import { ITEMS, GAMEMODES, LEVELS, ENEMIES } from "../utils/Consts.js";
 
 const Game = function () {
-  this.GAMEMODES = {
-    SURVIVAL: 0,
-    CREATIVE: 1,
-  };
-  this.LEVEL_TYPE = {
-    NORMAL: 0,
-    RANDOM: 1,
-  };
-  this.BOUNDS = {
-    x: 100,
-  };
-
-  this.gamemode = this.GAMEMODES.SURVIVAL;
-  this.levelType = this.LEVEL_TYPE.NORMAL;
+  this.gamemode = GAMEMODES.SURVIVAL;
+  this.levelType = LEVELS.NORMAL;
 
   // Seta o modo de jogo para sobrevivencia
   this.setGamemodeSurvival = () => {
-    this.gamemode = this.GAMEMODES.SURVIVAL;
+    this.gamemode = GAMEMODES.SURVIVAL;
   };
 
   // Seta o modo de jogo para criativo
   this.setGamemodeCreative = () => {
-    this.gamemode = this.GAMEMODES.CREATIVE;
+    this.gamemode = GAMEMODES.CREATIVE;
     airplane.vz = 0;
   };
 
   // Inicia o level
   this.loadLevel = (level = 1) => {
-    LEVELS[level].enemies.forEach((enemy) => {
-      if (enemy.type == "air")
-        enemies.add(
-          new THREE.Vector3(
-            enemy.x,
-            airplane.mesh.position.y,
-            enemy.z + LEVELS[level].z
-          ),
-          enemy.movement
-        );
-      else if (enemy.type == "ground")
-        cannons.add(
-          new THREE.Vector3(enemy.x, 2, enemy.z + enemy.z + LEVELS[level].z)
-        );
+    // Spawna os inimigos
+    inputLevels[level].enemies.forEach((enemy) => {
+      switch (enemy.type) {
+        case ENEMIES.AIRPLANE: {
+          enemies.add(
+            new THREE.Vector3(
+              enemy.x,
+              airplane.mesh.position.y,
+              enemy.z + inputLevels[level].z
+            ),
+            enemy.movement
+          );
+          break;
+        }
+
+        case ENEMIES.TANK: {
+          cannons.add(
+            new THREE.Vector3(
+              enemy.x,
+              2,
+              enemy.z + enemy.z + inputLevels[level].z
+            )
+          );
+          break;
+        }
+      }
+    });
+
+    // Spawna os itens
+    inputLevels[level].items.forEach((item) => {
+      items.add(
+        item.type,
+        new THREE.Vector3(
+          item.x,
+          airplane.mesh.position.y,
+          item.z + inputLevels[level].z
+        ),
+        item.value
+      );
     });
   };
 
   this.update = (dt) => {
     if (keyboard.down("M")) {
-      if (this.gamemode == this.GAMEMODES.SURVIVAL) this.setGamemodeCreative();
+      if (this.gamemode == GAMEMODES.SURVIVAL) this.setGamemodeCreative();
       else this.setGamemodeSurvival();
     }
   };

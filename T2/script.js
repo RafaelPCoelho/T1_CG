@@ -7,14 +7,16 @@ import {
   initDefaultBasicLight,
 } from "../libs/util/util.js";
 import KeyboardState from "../libs/util/KeyboardState.js";
-import Airplane from "./Airplane.js";
+import Airplane from "./prefabs/Airplane.js";
 import Plano from "./Plano.js";
 import Camera from "./Camera.js";
-import Enemy from "./Enemy.js";
-import Cannon from "./Cannon.js";
+import Enemy from "./prefabs/Enemy.js";
+import Cannon from "./prefabs/Cannon.js";
 import EntityList from "./libs/EntityList.js";
 import Ticker from "./libs/Ticker.js";
 import Game from "./utils/Game.js";
+import Item from "./prefabs/Item.js";
+import { GAMEMODES } from "./utils/Consts.js";
 
 var stats = new Stats(); // To show FPS information
 var scene = new THREE.Scene(); // Create main scene
@@ -32,6 +34,7 @@ var game = new Game();
 
 var cannons = new EntityList(Cannon);
 var enemies = new EntityList(Enemy);
+var items = new EntityList(Item);
 
 game.loadLevel(1);
 
@@ -60,9 +63,7 @@ function render(time) {
   // Limpa o info e reescreve com o fps e a munição
   info.infoBox.innerHTML = "";
   info.add(
-    `MODO ${
-      game.gamemode == game.GAMEMODES.SURVIVAL ? "SOBREVIVENCIA" : "CRIATIVO"
-    }`
+    `MODO ${game.gamemode == GAMEMODES.SURVIVAL ? "SOBREVIVENCIA" : "CRIATIVO"}`
   );
   info.add(
     `Ammo: ${
@@ -88,6 +89,7 @@ function render(time) {
 
     enemies.update(deltaTime);
     cannons.update(deltaTime);
+    items.update(deltaTime);
   }
 
   stats.update(); // Update FPS
@@ -104,4 +106,5 @@ export {
   enemies,
   cannons,
   game,
+  items,
 };

@@ -1,8 +1,8 @@
 import * as THREE from "three";
-import { checkCollision } from "./libs/Collision/index.js";
-import EntityList from "./libs/EntityList.js";
+import { checkCollision } from "../libs/Collision/index.js";
+import EntityList from "../libs/EntityList.js";
 import Missile from "./Missile.js";
-import { scene, camera, airplane } from "./script.js";
+import { scene, camera, airplane } from "../script.js";
 
 const Cannon = function (position, onDestroy) {
   this.geometry = new THREE.BoxGeometry(10, 2, 10);

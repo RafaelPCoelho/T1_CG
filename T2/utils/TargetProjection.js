@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { airplane, scene } from "./script.js";
+import { airplane, scene } from "../script.js";
 
 const TargetProjection = function (position, angle) {
   this.mesh = new THREE.Mesh(

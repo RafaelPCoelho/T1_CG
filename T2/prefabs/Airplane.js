@@ -1,42 +1,45 @@
 import * as THREE from "three";
-import { degreesToRadians } from "../libs/util/util.js";
-import { scene, camera, keyboard, enemies, game } from "./script.js";
+import { degreesToRadians } from "../../libs/util/util.js";
+import { scene, camera, keyboard, enemies, game } from "../script.js";
 import Bullet from "./Bullet.js";
 import Torpedo from "./Torpedo.js";
-import TargetProjection from "./TargetProjection.js";
-import EntityList from "./libs/EntityList.js";
+import TargetProjection from "../utils/TargetProjection.js";
+import EntityList from "../libs/EntityList.js";
+import { GAMEMODES, MAP } from "../utils/Consts.js";
 
 const Airplane = function () {
-  this.radius = 5;
-  this.size = 10;
-  this.vx = 0;
-  this.vy = 0;
-  this.vz = -1;
-  this.alive = true;
-  this.ammoPerMag = 10;
-  this.ammo = this.ammoPerMag;
-  this.counter = 0;
-  this.reloadTime = 2;
-  this.nextReload = 0;
-  this.shootDelay = 0.5;
-  this.nextShoot = 0;
-  this.bullets = new EntityList(Bullet);
-  this.torpedos = new EntityList(Torpedo);
-  this.gameOver = false;
-  this.torpedoMark = null;
-  this.torpedoAngle = degreesToRadians(20);
-
-  this.material = new THREE.MeshLambertMaterial({
-    color: "rgb(50, 100, 10)",
-  });
-
-  this.mesh = new THREE.Mesh(
-    new THREE.ConeGeometry(this.radius, this.size),
-    this.material
-  );
-
   // Inicia o avião com as configurações padrão
   this.init = () => {
+    this.radius = 5;
+    this.size = 10;
+    this.vx = 0;
+    this.vy = 0;
+    this.vz = -1;
+    this.alive = true;
+    this.ammoPerMag = 10;
+    this.ammo = this.ammoPerMag;
+    this.counter = 0;
+    this.defReloadTime = 2;
+    this.reloadTime = 2;
+    this.nextReload = 0;
+    this.shootDelay = 0.5;
+    this.nextShoot = 0;
+    this.bullets = new EntityList(Bullet);
+    this.torpedos = new EntityList(Torpedo);
+    this.gameOver = false;
+    this.torpedoMark = null;
+    this.torpedoAngle = degreesToRadians(20);
+    this.health = 100;
+
+    this.material = new THREE.MeshLambertMaterial({
+      color: "rgb(50, 100, 10)",
+    });
+
+    this.mesh = new THREE.Mesh(
+      new THREE.ConeGeometry(this.radius, this.size),
+      this.material
+    );
+
     this.mesh.rotateX(degreesToRadians(-90));
     this.mesh.position.set(0, 50, 80);
     scene.add(this.mesh);
@@ -49,7 +52,7 @@ const Airplane = function () {
 
   // Define o estado do avião como destruído
   this.destroy = () => {
-    if (!this.alive) return;
+    if (!this.alive || game.gamemode == GAMEMODES.CREATIVE) return;
 
     this.alive = false;
     this.vz = 0;
@@ -83,7 +86,7 @@ const Airplane = function () {
     if (keyboard.pressed("D") || keyboard.pressed("right")) this.vx = 1;
     if (keyboard.pressed("W") || keyboard.pressed("up")) this.vz = -2;
     if (keyboard.pressed("S") || keyboard.pressed("down"))
-      if (game.gamemode == game.GAMEMODES.SURVIVAL) this.vz = 0.5;
+      if (game.gamemode == GAMEMODES.SURVIVAL) this.vz = 0.5;
       else this.vz = 2;
     if (
       keyboard.up("A") ||
@@ -99,7 +102,7 @@ const Airplane = function () {
       keyboard.up("up") ||
       keyboard.up("down")
     ) {
-      if (game.gamemode == game.GAMEMODES.SURVIVAL) this.vz = -1;
+      if (game.gamemode == GAMEMODES.SURVIVAL) this.vz = -1;
       else this.vz = 0;
     }
     if (keyboard.down("T")) this.torpedo();
@@ -107,7 +110,7 @@ const Airplane = function () {
 
     // Define a posição do avião, limitando as laterais e a profundidade
     this.mesh.position.set(
-      Math.max(-game.BOUNDS.x, Math.min(game.BOUNDS.x, x + this.vx)),
+      Math.max(-MAP.BOUND_X, Math.min(MAP.BOUND_X, x + this.vx)),
       y + this.vy,
       Math.max(
         -100 + cam.position.z,
