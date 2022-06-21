@@ -6,6 +6,7 @@ import Torpedo from "./Torpedo.js";
 import TargetProjection from "../utils/TargetProjection.js";
 import EntityList from "../libs/EntityList.js";
 import { GAMEMODES, MAP } from "../utils/Consts.js";
+import { GLTFLoader } from "../../build/jsm/loaders/GLTFLoader.js";
 
 const Airplane = function () {
   // Inicia o avião com as configurações padrão
@@ -31,6 +32,17 @@ const Airplane = function () {
     this.torpedoAngle = degreesToRadians(20);
     this.health = 100;
 
+    let loader = new GLTFLoader();
+    loader.load("./assets/aviaoGLTF.gltf",function ( gltf )
+    {
+      let aviao = gltf.scene
+      aviao.rotateY(degreesToRadians(-180))
+      aviao.traverse( function (child){
+        if(child) 
+        child.castShadow = true;
+      });
+    },null ,null);  
+
     this.material = new THREE.MeshLambertMaterial({
       color: "rgb(50, 100, 10)",
     });
@@ -43,6 +55,7 @@ const Airplane = function () {
     this.mesh.rotateX(degreesToRadians(-90));
     this.mesh.position.set(0, 50, 80);
     scene.add(this.mesh);
+    scene.add( aviao );
 
     this.torpedoMark = new TargetProjection(
       this.mesh.position,
