@@ -33,15 +33,19 @@ const Airplane = function () {
     this.health = 100;
 
     let loader = new GLTFLoader();
-    loader.load("./assets/aviaoGLTF.gltf",function ( gltf )
-    {
-      let aviao = gltf.scene
-      aviao.rotateY(degreesToRadians(-180))
-      aviao.traverse( function (child){
-        if(child) 
-        child.castShadow = true;
-      });
-    },null ,null);  
+    this.aviao = null;
+    loader.load(
+      "./assets/aviaoGLTF.gltf",
+      function (gltf) {
+        this.aviao = gltf.scene;
+        this.aviao.rotateY(degreesToRadians(-180));
+        this.aviao.traverse(function (child) {
+          if (child) child.castShadow = true;
+        });
+      },
+      null,
+      null
+    );
 
     this.material = new THREE.MeshLambertMaterial({
       color: "rgb(50, 100, 10)",
@@ -55,7 +59,7 @@ const Airplane = function () {
     this.mesh.rotateX(degreesToRadians(-90));
     this.mesh.position.set(0, 50, 80);
     scene.add(this.mesh);
-    scene.add( aviao );
+    scene.add(this.aviao);
 
     this.torpedoMark = new TargetProjection(
       this.mesh.position,
