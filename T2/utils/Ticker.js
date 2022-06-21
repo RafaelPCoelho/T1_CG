@@ -4,6 +4,10 @@ const Ticker = function (interval = 1000, onTick) {
   this.interval = interval;
   this.counter = 0;
 
+  this.reset = () => {
+    this.counter = 0;
+  };
+
   this.update = (dt) => {
     this.counter += dt;
 

@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { checkCollision } from "../libs/Collision/index.js";
-import EntityList from "../libs/EntityList.js";
+import EntityList from "../utils/EntityList.js";
 import Missile from "./Missile.js";
 import { scene, camera, airplane } from "../script.js";
 

@@ -12,8 +12,8 @@ import Plano from "./Plano.js";
 import Camera from "./Camera.js";
 import Enemy from "./prefabs/Enemy.js";
 import Cannon from "./prefabs/Cannon.js";
-import EntityList from "./libs/EntityList.js";
-import Ticker from "./libs/Ticker.js";
+import EntityList from "./utils/EntityList.js";
+import Ticker from "./utils/Ticker.js";
 import Game from "./utils/Game.js";
 import Item from "./prefabs/Item.js";
 import { GAMEMODES } from "./utils/Consts.js";
@@ -71,6 +71,7 @@ function render(time) {
       `reloading (${(airplane.nextReload - airplane.counter).toFixed(0)}s)`
     }`
   );
+  info.add(`Health: ${airplane.health}`);
   info.addParagraph();
   info.add(`fps: ${fps.toFixed(2)}`);
   info.show();
