@@ -7,6 +7,7 @@ import TargetProjection from "../utils/TargetProjection.js";
 import EntityList from "../libs/EntityList.js";
 import { GAMEMODES, MAP } from "../utils/Consts.js";
 import { GLTFLoader } from "../../build/jsm/loaders/GLTFLoader.js";
+import AviaoGLTFProjection from "../utils/LoadsGLTF.js";
 
 const Airplane = function () {
   // Inicia o avião com as configurações padrão
@@ -31,18 +32,23 @@ const Airplane = function () {
     this.torpedoMark = null;
     this.torpedoAngle = degreesToRadians(20);
     this.health = 100;
-
+    this.aviao = null;
+  
+    /*
     let loader = new GLTFLoader();
-    loader.load("./assets/aviaoGLTF.gltf",function ( gltf )
-    {
-      let aviao = gltf.scene
-      aviao.rotateY(degreesToRadians(-180))
-      aviao.traverse( function (child){
-        if(child) 
-        child.castShadow = true;
-      });
+    this.aviao = null;
+    loader.load(
+      "./assets/aviaoGLTF.gltf",
+      ( gltf ) => {
+        this.aviao = gltf.scene;
+        this.aviao.position.copy(this.mesh.position);
+        this.aviao.rotateY(degreesToRadians(-180))
+        this.aviao.traverse( function (child){
+          if(child) child.castShadow = true;
+        });
+      scene.add(this.aviao);
     },null ,null);  
-
+    */
     this.material = new THREE.MeshLambertMaterial({
       color: "rgb(50, 100, 10)",
     });
@@ -52,10 +58,11 @@ const Airplane = function () {
       this.material
     );
 
+    this.aviao = new AviaoGLTFProjection(this.mesh.position);
+
     this.mesh.rotateX(degreesToRadians(-90));
     this.mesh.position.set(0, 50, 80);
-    scene.add(this.mesh);
-    scene.add( aviao );
+    //scene.add(this.mesh);
 
     this.torpedoMark = new TargetProjection(
       this.mesh.position,
@@ -145,6 +152,7 @@ const Airplane = function () {
     this.bullets.update(dt);
 
     if (this.torpedoMark) this.torpedoMark.update(dt);
+    if (this.aviao) this.aviao.update(dt);
   };
 
   // Roda o comportamento do avião quando seu estado é: morto
@@ -156,6 +164,8 @@ const Airplane = function () {
     this.mesh.translateY(this.vy);
     this.mesh.translateZ(this.vz);
     this.mesh.rotateX(-degreesToRadians(35 * (dt / 1000)));
+    
+    if (this.aviao) this.aviao.update(dt);
 
     if (this.mesh.position.y <= 0) {
       this.gameOver = true;
