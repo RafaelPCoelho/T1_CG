@@ -1,4 +1,4 @@
-import { pushObject } from "./utils/funcs.js";
+import { pushObject } from "../libs/utils/funcs.js";
 
 // Dado um tipo de entidade, cria uma lista com chaves
 // unicas ( que nunca se repetem ), alem de possuir

@@ -40,7 +40,7 @@ const EnemyBullet = function (position, onDestroy) {
     if (!checkCollision(this.mesh, airplane.mesh)) return;
 
     this.destroy();
-    airplane.destroy();
+    airplane.damage(20);
   };
 
   this.update = (dt) => {

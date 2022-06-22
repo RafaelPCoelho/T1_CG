@@ -4,10 +4,12 @@ import { scene, camera, keyboard, enemies, game } from "../script.js";
 import Bullet from "./Bullet.js";
 import Torpedo from "./Torpedo.js";
 import TargetProjection from "../utils/TargetProjection.js";
-import EntityList from "../libs/EntityList.js";
+import EntityList from "../utils/EntityList.js";
 import { GAMEMODES, MAP } from "../utils/Consts.js";
 import { GLTFLoader } from "../../build/jsm/loaders/GLTFLoader.js";
 import AviaoGLTFProjection from "../utils/AviaoGLTFProjection.js";
+import { clamp } from "../libs/utils/math.js";
+import Ticker from "../utils/Ticker.js";
 
 const Airplane = function () {
   // Inicia o avião com as configurações padrão
@@ -33,6 +35,15 @@ const Airplane = function () {
     this.torpedoAngle = degreesToRadians(20);
     this.health = 100;
     this.aviao = null;
+    this.canRegenerate = true;
+    this.fodTicker = new Ticker(2000, () => {
+      // Tempo livre de dano
+      this.canRegenerate = true;
+    });
+    this.regeneration = new Ticker(300, () => {
+      // Regenerador
+      this.health = clamp(this.health + 1, 0, 100);
+    });
 
     /*
     let loader = new GLTFLoader();
@@ -150,9 +161,10 @@ const Airplane = function () {
     // Atualiza o estado das balas e torpedos disparados
     this.torpedos.update(dt);
     this.bullets.update(dt);
-
     if (this.torpedoMark) this.torpedoMark.update(dt);
     if (this.aviao) this.aviao.update(dt);
+    if (this.canRegenerate) this.regeneration.update(dt);
+    this.fodTicker.update(dt);
   };
 
   // Roda o comportamento do avião quando seu estado é: morto
@@ -178,6 +190,16 @@ const Airplane = function () {
   this.update = (dt) => {
     if (this.alive) this.aliveBehaviour(dt);
     else this.deathBehaviour(dt);
+  };
+
+  this.damage = (value) => {
+    if (!this.alive) return;
+
+    this.health = clamp(this.health - Math.abs(value), 0, 100);
+    this.canRegenerate = false;
+    this.fodTicker.reset();
+
+    if (this.health <= 0) this.destroy();
   };
 
   this.init();

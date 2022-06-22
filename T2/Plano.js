@@ -1,20 +1,22 @@
 import * as THREE from "three";
-import { scene, airplane } from "./script.js";
+import { scene, airplane, camera } from "./script.js";
 import { createGroundPlaneWired } from "../libs/util/util.js";
 
 var Plano = function () {
-  // Cria-se dois planos que alternarão entre si
-  // produzindo um efeito de chão infinito
-  this.plano1 = createGroundPlaneWired(600, 600);
-  this.plano2 = createGroundPlaneWired(600, 600);
-  this.plano2.position.set(0, 0, -600);
-  this.limiteCriadorDePlano = -500;
-  this.alternadorDePlano = true;
-  this.proxPlano = -1200;
-  this.novaPosition = 0;
-
-  // Inicia os dois planos
   this.init = () => {
+    // Cria-se dois planos que alternarão entre si
+    // produzindo um efeito de chão infinito
+    this.plano1 = createGroundPlaneWired(600, 600);
+    this.plano2 = createGroundPlaneWired(600, 600);
+    this.plano2.position.set(0, 0, -600);
+    this.limiteCriadorDePlano = -500;
+    this.alternadorDePlano = true;
+    this.proxPlano = -1200;
+    this.novaPosition = 0;
+
+    this.visibleDepth = window.innerHeight / Math.sin(camera.theta);
+
+    // Inicia os dois planos
     scene.add(this.plano1);
     scene.add(this.plano2);
   };
