@@ -3,11 +3,14 @@ import { checkCollision } from "../libs/Collision/index.js";
 import EntityList from "../utils/EntityList.js";
 import Missile from "./Missile.js";
 import { scene, camera, airplane } from "../script.js";
+import MisselLauncher from "../utils/MisselLauncher.js";
 
 const Cannon = function (position, onDestroy) {
   this.geometry = new THREE.BoxGeometry(10, 2, 10);
   this.material = new THREE.MeshStandardMaterial();
   this.mesh = new THREE.Mesh(this.geometry, this.material);
+
+  this.launcher = new MisselLauncher(this.mesh.position);
 
   this.alive = true;
   this.counter = 0;

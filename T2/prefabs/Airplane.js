@@ -7,6 +7,7 @@ import TargetProjection from "../utils/TargetProjection.js";
 import EntityList from "../utils/EntityList.js";
 import { GAMEMODES, MAP } from "../utils/Consts.js";
 import { GLTFLoader } from "../../build/jsm/loaders/GLTFLoader.js";
+import AviaoGLTFProjection from "../utils/AviaoGLTFProjection.js";
 import { clamp } from "../libs/utils/math.js";
 import Ticker from "../utils/Ticker.js";
 
@@ -33,6 +34,7 @@ const Airplane = function () {
     this.torpedoMark = null;
     this.torpedoAngle = degreesToRadians(20);
     this.health = 100;
+    this.aviao = null;
     this.canRegenerate = true;
     this.fodTicker = new Ticker(2000, () => {
       // Tempo livre de dano
@@ -43,21 +45,21 @@ const Airplane = function () {
       this.health = clamp(this.health + 1, 0, 100);
     });
 
+    /*
     let loader = new GLTFLoader();
     this.aviao = null;
     loader.load(
       "./assets/aviaoGLTF.gltf",
-      (gltf) => {
+      ( gltf ) => {
         this.aviao = gltf.scene;
-        this.aviao.rotateY(degreesToRadians(-180));
-        this.aviao.traverse(function (child) {
-          if (child) child.castShadow = true;
+        this.aviao.position.copy(this.mesh.position);
+        this.aviao.rotateY(degreesToRadians(-180))
+        this.aviao.traverse( function (child){
+          if(child) child.castShadow = true;
         });
-      },
-      null,
-      null
-    );
-
+      scene.add(this.aviao);
+    },null ,null);  
+    */
     this.material = new THREE.MeshLambertMaterial({
       color: "rgb(50, 100, 10)",
     });
@@ -67,10 +69,11 @@ const Airplane = function () {
       this.material
     );
 
+    this.aviao = new AviaoGLTFProjection(this.mesh.position);
+
     this.mesh.rotateX(degreesToRadians(-90));
     this.mesh.position.set(0, 50, 80);
-    scene.add(this.mesh);
-    scene.add(this.aviao);
+    //scene.add(this.mesh);
 
     this.torpedoMark = new TargetProjection(
       this.mesh.position,
@@ -159,6 +162,7 @@ const Airplane = function () {
     this.torpedos.update(dt);
     this.bullets.update(dt);
     if (this.torpedoMark) this.torpedoMark.update(dt);
+    if (this.aviao) this.aviao.update(dt);
     if (this.canRegenerate) this.regeneration.update(dt);
     this.fodTicker.update(dt);
   };
@@ -172,6 +176,8 @@ const Airplane = function () {
     this.mesh.translateY(this.vy);
     this.mesh.translateZ(this.vz);
     this.mesh.rotateX(-degreesToRadians(35 * (dt / 1000)));
+
+    if (this.aviao) this.aviao.update(dt);
 
     if (this.mesh.position.y <= 0) {
       this.gameOver = true;
