@@ -8,7 +8,7 @@ import EntityList from "../utils/EntityList.js";
 import { GAMEMODES, MAP } from "../utils/Consts.js";
 import { GLTFLoader } from "../../build/jsm/loaders/GLTFLoader.js";
 import AviaoGLTFProjection from "../utils/AviaoGLTFProjection.js";
-import { clamp } from "../libs/utils/math.js";
+import { clamp, slerp } from "../libs/utils/math.js";
 import Ticker from "../utils/Ticker.js";
 
 const Airplane = function () {
@@ -44,22 +44,8 @@ const Airplane = function () {
       // Regenerador
       this.health = clamp(this.health + 1, 0, 100);
     });
+    this.rotCounter = 0;
 
-    /*
-    let loader = new GLTFLoader();
-    this.aviao = null;
-    loader.load(
-      "./assets/aviaoGLTF.gltf",
-      ( gltf ) => {
-        this.aviao = gltf.scene;
-        this.aviao.position.copy(this.mesh.position);
-        this.aviao.rotateY(degreesToRadians(-180))
-        this.aviao.traverse( function (child){
-          if(child) child.castShadow = true;
-        });
-      scene.add(this.aviao);
-    },null ,null);  
-    */
     this.material = new THREE.MeshLambertMaterial({
       color: "rgb(50, 100, 10)",
     });
@@ -73,7 +59,7 @@ const Airplane = function () {
 
     this.mesh.rotateX(degreesToRadians(-90));
     this.mesh.position.set(0, 50, 80);
-    //scene.add(this.mesh);
+    // scene.add(this.mesh);
 
     this.torpedoMark = new TargetProjection(
       this.mesh.position,
@@ -162,9 +148,21 @@ const Airplane = function () {
     this.torpedos.update(dt);
     this.bullets.update(dt);
     if (this.torpedoMark) this.torpedoMark.update(dt);
-    if (this.aviao) this.aviao.update(dt);
-    if (this.canRegenerate) this.regeneration.update(dt);
+
+    // Ticker free of damage e regeneracao
     this.fodTicker.update(dt);
+    if (this.canRegenerate) this.regeneration.update(dt);
+
+    // Faz o modelo seguir o mesh principal
+    let speedRot = (dt / 1000) * this.vx * 2;
+    this.rotCounter += speedRot;
+    this.aviao.aviao?.position.copy(this.mesh.position);
+    this.aviao.aviao?.rotation.set(
+      this.aviao.aviao?.rotation.x,
+      this.aviao.aviao?.rotation.y,
+      this.rotCounter + Math.PI
+    );
+    this.rotCounter = slerp(this.rotCounter, 0, Math.abs(this.rotCounter / 8));
   };
 
   // Roda o comportamento do avião quando seu estado é: morto
@@ -175,9 +173,7 @@ const Airplane = function () {
 
     this.mesh.translateY(this.vy);
     this.mesh.translateZ(this.vz);
-    this.mesh.rotateX(-degreesToRadians(35 * (dt / 1000)));
-
-    if (this.aviao) this.aviao.update(dt);
+    this.aviao.aviao.rotateX(degreesToRadians(35 * (dt / 100)));
 
     if (this.mesh.position.y <= 0) {
       this.gameOver = true;

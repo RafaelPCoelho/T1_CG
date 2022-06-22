@@ -91,8 +91,8 @@ const Enemy = function (
       }
     }
 
-    if (this.mesh.position.x >= MAP.BOUND_X + 25) this.destroy();
-    else if (this.mesh.position.x <= -MAP.BOUND_X - 25) this.destroy();
+    if (this.mesh.position.x >= MAP.BOUND_X + 100) this.destroy();
+    else if (this.mesh.position.x <= -MAP.BOUND_X - 100) this.destroy();
   };
 
   // Roda o comportamento do inimigo quando seu estado é: vivo

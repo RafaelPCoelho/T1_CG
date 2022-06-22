@@ -29,6 +29,7 @@ export const predictPosition = (
 ) => {
   let projection = to.clone();
   let dist = projection.distanceTo(from);
+  let saveY = projection.y;
 
   // Prevê o tempo do hit da bala com o aviao
   let hitDelay = dist / (speedFrom * (dt / 1000));
@@ -39,6 +40,8 @@ export const predictPosition = (
       .multiplyScalar(hitDelay)
       .addScalar(-variation + Math.random() * 2 * variation)
   );
+
+  projection.setY(saveY);
 
   return projection;
 };

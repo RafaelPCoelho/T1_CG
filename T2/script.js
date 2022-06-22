@@ -97,7 +97,7 @@ function render(time) {
     items.update(deltaTime);
   }
 
-  console.log(plano.visibleDepth);
+  // console.log(plano.visibleDepth);
 
   // debugBox.follow(
   //   new THREE.Vector3(

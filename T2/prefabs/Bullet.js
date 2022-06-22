@@ -22,7 +22,7 @@ const Bullet = function (position, onDestroy) {
   this.destroy = () => {
     if (onDestroy) onDestroy();
     scene.remove(this.mesh);
-    console.log(`Killed bullet`);
+    // console.log(`Killed bullet`);
   };
 
   // Atualiza o estado da bala e verifica se ela já chegou
