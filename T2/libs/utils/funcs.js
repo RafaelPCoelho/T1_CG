@@ -18,3 +18,27 @@ export const iterateCalling = (
 ) => {
   targetArray.forEach((value) => value[functionName](params));
 };
+
+export const predictPosition = (
+  from,
+  to,
+  speedFrom,
+  speedTarget,
+  variation,
+  dt = 16.66
+) => {
+  let projection = to.clone();
+  let dist = projection.distanceTo(from);
+
+  // Prevê o tempo do hit da bala com o aviao
+  let hitDelay = dist / (speedFrom * (dt / 1000));
+
+  // Define local da projeção, com uma variação para garantir erro/acerto
+  projection.add(
+    speedTarget
+      .multiplyScalar(hitDelay)
+      .addScalar(-variation + Math.random() * 2 * variation)
+  );
+
+  return projection;
+};

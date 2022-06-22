@@ -1,22 +1,23 @@
 import * as THREE from "three";
+import { predictPosition } from "../libs/utils/funcs.js";
 import { distVec } from "../libs/utils/vec.js";
 import { airplane, camera, scene } from "../script.js";
 
 const Missile = function (position, onDestroy) {
-  this.geometry = new THREE.BoxGeometry(2, 2, 2);
-  this.material = new THREE.MeshStandardMaterial({ color: "red" });
-  this.mesh = new THREE.Mesh(this.geometry, this.material);
-
-  this.alive = true;
-  this.raiseVelocity = 100;
-  this.inPosition = false;
-  this.direction = new THREE.Vector3(0, 0, 0);
-
-  this.speed = 200;
-  this.distance = 0;
-  this.maxDistance = 1000;
-
   this.init = () => {
+    this.geometry = new THREE.BoxGeometry(2, 2, 2);
+    this.material = new THREE.MeshStandardMaterial({ color: "red" });
+    this.mesh = new THREE.Mesh(this.geometry, this.material);
+
+    this.alive = true;
+    this.raiseVelocity = 100;
+    this.inPosition = false;
+    this.direction = new THREE.Vector3(0, 0, 0);
+
+    this.speed = 200;
+    this.distance = 0;
+    this.maxDistance = 1000;
+
     scene.add(this.mesh);
     this.mesh.position.copy(position);
   };
@@ -37,8 +38,16 @@ const Missile = function (position, onDestroy) {
       // Stop raising Y when reach position
       if (this.mesh.position.y >= airplane.mesh.position.y) {
         this.inPosition = true;
-        // this.direction = distVec(this.mesh.position, airplane.mesh.position);
-        this.mesh.lookAt(airplane.mesh.position);
+        this.mesh.lookAt(
+          predictPosition(
+            this.mesh.position,
+            airplane.mesh.position,
+            this.speed,
+            new THREE.Vector3(airplane.vx, airplane.vy, airplane.vz),
+            5,
+            dt
+          )
+        );
       }
     } else {
       this.mesh.translateZ(this.speed * (dt / 1000));

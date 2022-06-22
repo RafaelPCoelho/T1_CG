@@ -2,12 +2,12 @@ import * as THREE from "three";
 import { scene } from "../script.js";
 
 const Torpedo = function (position, angle, onDestroy) {
-  this.mesh = new THREE.Mesh(
-    new THREE.BoxGeometry(1, 1, 5),
-    new THREE.MeshStandardMaterial()
-  );
-
   this.init = () => {
+    this.mesh = new THREE.Mesh(
+      new THREE.BoxGeometry(1, 1, 5),
+      new THREE.MeshStandardMaterial()
+    );
+
     scene.add(this.mesh);
     this.mesh.position.copy(position);
     this.mesh.rotateX(angle);

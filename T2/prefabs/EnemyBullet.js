@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { checkCollision } from "../libs/Collision/index.js";
+import { predictPosition } from "../libs/utils/funcs.js";
 import { airplane, scene } from "../script.js";
 
 const EnemyBullet = function (position, onDestroy) {
@@ -13,21 +14,16 @@ const EnemyBullet = function (position, onDestroy) {
     this.maxDist = 1000;
 
     this.mesh.position.copy(position);
-    this.airplaneProjection = airplane.mesh.position.clone();
 
-    // Prevê o tempo do hit da bala com o aviao
-    this.hitDelay =
-      this.airplaneProjection.distanceTo(this.mesh.position) /
-      (this.speed * 0.01666);
-
-    // Define local da projeção, com uma variação para garantir erro/acerto
-    this.spread = 50;
-    this.airplaneProjection.z +=
-      airplane.vz * this.hitDelay -
-      this.spread +
-      Math.random() * 2 * this.spread;
-
-    this.mesh.lookAt(this.airplaneProjection);
+    this.mesh.lookAt(
+      predictPosition(
+        this.mesh.position,
+        airplane.mesh.position,
+        this.speed,
+        new THREE.Vector3(airplane.vx, airplane.vy, airplane.vz),
+        20
+      )
+    );
     scene.add(this.mesh);
   };
 
