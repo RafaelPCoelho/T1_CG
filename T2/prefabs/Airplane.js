@@ -7,7 +7,7 @@ import TargetProjection from "../utils/TargetProjection.js";
 import EntityList from "../libs/EntityList.js";
 import { GAMEMODES, MAP } from "../utils/Consts.js";
 import { GLTFLoader } from "../../build/jsm/loaders/GLTFLoader.js";
-import AviaoGLTFProjection from "../utils/LoadsGLTF.js";
+import AviaoGLTFProjection from "../utils/AviaoGLTFProjection.js";
 
 const Airplane = function () {
   // Inicia o avião com as configurações padrão
@@ -33,7 +33,7 @@ const Airplane = function () {
     this.torpedoAngle = degreesToRadians(20);
     this.health = 100;
     this.aviao = null;
-  
+
     /*
     let loader = new GLTFLoader();
     this.aviao = null;
@@ -164,7 +164,7 @@ const Airplane = function () {
     this.mesh.translateY(this.vy);
     this.mesh.translateZ(this.vz);
     this.mesh.rotateX(-degreesToRadians(35 * (dt / 1000)));
-    
+
     if (this.aviao) this.aviao.update(dt);
 
     if (this.mesh.position.y <= 0) {
