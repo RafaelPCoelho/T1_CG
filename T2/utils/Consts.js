@@ -23,9 +23,18 @@ export const ENEMIES = {
 };
 
 export const MOVEMENTS = {
-  HORIZONTAL: "movements/horizontal",
-  VERTICAL: "movements/vertical",
+  STRAIGHT: "movements/straight",
+  DIAGONAL: "movements/diagonal",
   ARC: "movements/arc",
+  DIRECTIONS: {
+    STRAIGHT_LEFT: "movements/straight/left",
+    STRAIGHT_RIGHT: "movements/straight/right",
+    STRAIGHT_FORWARD: "movements/straight/forward",
+    DIAGONAL_LEFT: "movements/diagonal/left",
+    DIAGONAL_RIGHT: "movements/diagonal/right",
+    ARC_LEFT: "movements/arc/left",
+    ARC_RIGHT: "movements/arc/right",
+  },
 };
 
 export default {

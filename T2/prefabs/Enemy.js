@@ -8,7 +8,12 @@ import { scene, camera, airplane, game } from "../script.js";
 import { MAP, MOVEMENTS } from "../utils/Consts.js";
 import EnemyBullet from "./EnemyBullet.js";
 
-const Enemy = function (position, movement = MOVEMENTS.VERTICAL, onDestroy) {
+const Enemy = function (
+  position,
+  movement = MOVEMENTS.STRAIGHT,
+  direction = MOVEMENTS.DIRECTIONS.STRAIGHT_FORWARD,
+  onDestroy
+) {
   this.init = () => {
     this.mesh = new THREE.Mesh(
       new THREE.BoxGeometry(6, 6, 6),
@@ -17,7 +22,6 @@ const Enemy = function (position, movement = MOVEMENTS.VERTICAL, onDestroy) {
       })
     );
 
-    this.dx = Math.round(Math.random()) * 2 - 1;
     this.vx = Math.random() * 20 + 20;
     this.vz = Math.random();
     this.vz = Math.max(0.4, Math.min(this.vz, 0.7));
@@ -28,7 +32,7 @@ const Enemy = function (position, movement = MOVEMENTS.VERTICAL, onDestroy) {
     this.bulletTicker = new Ticker(100 / this.fireRate, () => {
       this.bullets.add(this.mesh.position);
     });
-    this.angle = 0;
+    this.frame = 1;
 
     this.mesh.position.copy(position);
     scene.add(this.mesh);
@@ -43,26 +47,52 @@ const Enemy = function (position, movement = MOVEMENTS.VERTICAL, onDestroy) {
   // Movimenta o inimigo de acordo com o parametro passado
   this.move = (dt) => {
     switch (movement) {
-      case MOVEMENTS.VERTICAL: {
-        break;
-      }
+      case MOVEMENTS.STRAIGHT: {
+        switch (direction) {
+          case MOVEMENTS.DIRECTIONS.STRAIGHT_LEFT: {
+            this.mesh.translateX(this.vx * -1 * (dt / 1000));
+            break;
+          }
 
-      case MOVEMENTS.HORIZONTAL: {
-        if (this.mesh.position.x >= MAP.BOUND_X) this.dx = -1;
-        else if (this.mesh.position.x <= -MAP.BOUND_X) this.dx = 1;
+          case MOVEMENTS.DIRECTIONS.STRAIGHT_RIGHT: {
+            this.mesh.translateX(this.vx * 1 * (dt / 1000));
+            break;
+          }
 
-        this.mesh.translateX(this.vx * this.dx * (dt / 1000));
+          default: {
+            this.mesh.translateZ(20 * (dt / 1000));
+            break;
+          }
+        }
         break;
       }
 
       case MOVEMENTS.ARC: {
-        this.angle += 1 * (dt / 1000);
-        this.angle = clamp(this.angle, 0, Math.PI / 2);
-        this.mesh.translateZ(lerp(0, 1, Math.cos(this.angle)) * 2);
-        this.mesh.translateX(lerp(0, 1, Math.cos(this.angle)) * 2);
+        let dx;
+
+        switch (direction) {
+          case MOVEMENTS.DIRECTIONS.ARC_LEFT: {
+            dx = -1;
+            break;
+          }
+
+          case MOVEMENTS.DIRECTIONS.ARC_RIGHT: {
+            dx = 1;
+            break;
+          }
+        }
+
+        this.frame += 0.2 * (dt / 1000);
+        this.frame = clamp(this.frame, 0, Math.PI / 2);
+        this.mesh.translateZ(Math.sin(this.frame + Math.PI / 2) * 2.5);
+        this.mesh.translateX((dx * -Math.cos(this.frame - Math.PI / 2)) / 1.5);
+
         break;
       }
     }
+
+    if (this.mesh.position.x >= MAP.BOUND_X + 25) this.destroy();
+    else if (this.mesh.position.x <= -MAP.BOUND_X - 25) this.destroy();
   };
 
   // Roda o comportamento do inimigo quando seu estado é: vivo
@@ -86,11 +116,11 @@ const Enemy = function (position, movement = MOVEMENTS.VERTICAL, onDestroy) {
       this.destroy();
     }
 
-    this.move(dt);
-
-    // If near to the airplane
-    if (this.mesh.position.distanceTo(airplane.mesh.position) <= 500)
+    // Anda e atira apenas se estiver no campo de visão do aviao
+    if (this.mesh.position.distanceTo(airplane.mesh.position) <= 500) {
       this.bulletTicker.update(dt);
+      this.move(dt);
+    }
   };
 
   // Roda o comportamento do inimigo quando seu estado é: morto,

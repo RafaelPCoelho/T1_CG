@@ -30,7 +30,8 @@ const Game = function () {
               airplane.mesh.position.y,
               enemy.z + inputLevels[level].z
             ),
-            enemy.movement
+            enemy.movement,
+            enemy.direction
           );
           break;
         }

@@ -17,6 +17,7 @@ import Ticker from "./utils/Ticker.js";
 import Game from "./utils/Game.js";
 import Item from "./prefabs/Item.js";
 import { GAMEMODES } from "./utils/Consts.js";
+import DebugBox from "./prefabs/DebugBox.js";
 
 var stats = new Stats(); // To show FPS information
 var scene = new THREE.Scene(); // Create main scene
@@ -43,6 +44,7 @@ window.addEventListener(
   "resize",
   function () {
     onWindowResize(camera.camera, renderer);
+    plano.visibleDepth = window.innerHeight / Math.sin(camera.theta);
   },
   false
 );
@@ -52,6 +54,8 @@ var timestamp = 0;
 var fps = 0;
 
 var info = new InfoBox();
+
+// var debugBox = new DebugBox(3);
 
 render(0);
 function render(time) {
@@ -92,6 +96,16 @@ function render(time) {
     cannons.update(deltaTime);
     items.update(deltaTime);
   }
+
+  console.log(plano.visibleDepth);
+
+  // debugBox.follow(
+  //   new THREE.Vector3(
+  //     0,
+  //     2,
+  //     airplane.mesh.position.z - plano.visibleDepth + 1000
+  //   )
+  // );
 
   stats.update(); // Update FPS
   requestAnimationFrame(render);
