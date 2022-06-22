@@ -1,28 +1,35 @@
 import * as THREE from "three";
+import { clamp, lerp } from "../libs/utils/math.js";
+import { degreesToRadians } from "../../libs/util/util.js";
 import { checkCollision } from "../libs/Collision/index.js";
+import EntityList from "../libs/EntityList.js";
+import Ticker from "../libs/Ticker.js";
 import { scene, camera, airplane, game } from "../script.js";
 import { MAP, MOVEMENTS } from "../utils/Consts.js";
+import EnemyBullet from "./EnemyBullet.js";
 
 const Enemy = function (position, movement = MOVEMENTS.VERTICAL, onDestroy) {
-  this.mesh = new THREE.Mesh(
-    new THREE.BoxGeometry(6, 6, 6),
-    new THREE.MeshLambertMaterial({
-      color: "rgb(150, 60, 30)",
-    })
-  );
-
-  this.dx = Math.round(Math.random()) * 2 - 1;
-  this.vx = Math.random() * 20 + 20;
-  this.vz = Math.random();
-  this.vz = Math.max(0.4, Math.min(this.vz, 0.7));
-  this.vy = 0;
-  this.alive = true;
-
   this.init = () => {
-    // Seta a posição do inimigo com
-    // x aleatorio
-    // y ( altura ) fixa
-    // z proporcional ao tamanho da tela em relacao a rotacao da camera
+    this.mesh = new THREE.Mesh(
+      new THREE.BoxGeometry(6, 6, 6),
+      new THREE.MeshLambertMaterial({
+        color: "rgb(150, 60, 30)",
+      })
+    );
+
+    this.dx = Math.round(Math.random()) * 2 - 1;
+    this.vx = Math.random() * 20 + 20;
+    this.vz = Math.random();
+    this.vz = Math.max(0.4, Math.min(this.vz, 0.7));
+    this.vy = 0;
+    this.alive = true;
+    this.bullets = new EntityList(EnemyBullet);
+    this.fireRate = 0.1;
+    this.bulletTicker = new Ticker(100 / this.fireRate, () => {
+      this.bullets.add(this.mesh.position);
+    });
+    this.angle = 0;
+
     this.mesh.position.copy(position);
     scene.add(this.mesh);
   };
@@ -31,7 +38,6 @@ const Enemy = function (position, movement = MOVEMENTS.VERTICAL, onDestroy) {
   this.destroy = () => {
     if (!this.alive) return;
     this.alive = false;
-    console.log(`Killed enemy`);
   };
 
   // Movimenta o inimigo de acordo com o parametro passado
@@ -50,6 +56,10 @@ const Enemy = function (position, movement = MOVEMENTS.VERTICAL, onDestroy) {
       }
 
       case MOVEMENTS.ARC: {
+        this.angle += 1 * (dt / 1000);
+        this.angle = clamp(this.angle, 0, Math.PI / 2);
+        this.mesh.translateZ(lerp(0, 1, Math.cos(this.angle)) * 2);
+        this.mesh.translateX(lerp(0, 1, Math.cos(this.angle)) * 2);
         break;
       }
     }
@@ -77,6 +87,10 @@ const Enemy = function (position, movement = MOVEMENTS.VERTICAL, onDestroy) {
     }
 
     this.move(dt);
+
+    // If near to the airplane
+    if (this.mesh.position.distanceTo(airplane.mesh.position) <= 500)
+      this.bulletTicker.update(dt);
   };
 
   // Roda o comportamento do inimigo quando seu estado é: morto,
@@ -87,8 +101,8 @@ const Enemy = function (position, movement = MOVEMENTS.VERTICAL, onDestroy) {
   this.deathBehaviour = (dt) => {
     if (this.mesh.position.y <= 2) {
       setTimeout(() => {
-        if (onDestroy) onDestroy();
         scene.remove(this.mesh);
+        if (onDestroy && this.bullets.isEmpty()) onDestroy();
       }, 1000);
     } else {
       this.vy -= 4.5 * (dt / 1000);
@@ -100,6 +114,8 @@ const Enemy = function (position, movement = MOVEMENTS.VERTICAL, onDestroy) {
   this.update = (dt) => {
     if (this.alive) this.aliveBehaviour(dt);
     else this.deathBehaviour(dt);
+
+    this.bullets.update(dt);
   };
 
   this.init();
