@@ -21,13 +21,14 @@ const Cannon = function (position, onDestroy) {
 
   // Inicia a posicao com base no parametro position
   this.init = () => {
-    scene.add(this.mesh);
+    //scene.add(this.mesh);
     if (position) this.mesh.position.copy(position);
     else this.mesh.position.set(0, 1, -200);
   };
 
   this.destroy = () => {
     this.alive = false;
+    this.launcher.remove();
     scene.remove(this.mesh);
   };
 

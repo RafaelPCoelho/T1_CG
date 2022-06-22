@@ -1,6 +1,6 @@
 import { GLTFLoader } from "../../build/jsm/loaders/GLTFLoader.js";
-import { scene } from "../script.js";
-import { degreesToRadians } from "../../libs/util/util.js";
+import Cannon from "../prefabs/Cannon.js";
+import { cannons, scene } from "../script.js";
 
 const MisselLauncher = function (position) {
   const loader = new GLTFLoader();
@@ -18,6 +18,10 @@ const MisselLauncher = function (position) {
     null,
     null
   );
+
+  this.remove = () => {
+    scene.remove(this.launcher);
+  };
 };
 
 export default MisselLauncher;

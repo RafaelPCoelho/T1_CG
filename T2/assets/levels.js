@@ -67,7 +67,9 @@ export default {
        */
       { type: "health", x: 0, z: -100, value: 20 },
       { type: "reloadTime", x: -50, z: -300, value: -0.5 },
+      { type: "reloadTime", x: -50, z: -300, value: -4.0 },
       { type: "shootDelay", x: 20, z: -500, value: -0.05 },
+      { type: "shootDelay", x: -30, z: -50, value: -0.5 },
     ],
   },
 };
