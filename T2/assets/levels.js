@@ -6,11 +6,142 @@ export default {
     z: 0,
     enemies: [
       /**
-       * Spawn de inimigos no mapa
-       * -- type
-       * air - Avião
-       * ground - Lança misseis terrestre
+       * Spawn des inimigos no mapa
+       * {type} - Tipo de inimigo
+       * {movement} - Tipo de movimento
+       * {direction} - Direcao do movimento
        **/
+      {
+        type: ENEMIES.AIRPLANE,
+        x: 0,
+        z: -250,
+        movement: MOVEMENTS.STRAIGHT,
+        direction: MOVEMENTS.DIRECTIONS.STRAIGHT_FORWARD,
+      },
+      {
+        type: ENEMIES.AIRPLANE,
+        x: -20,
+        z: -450,
+        movement: MOVEMENTS.STRAIGHT,
+        direction: MOVEMENTS.DIRECTIONS.STRAIGHT_FORWARD,
+      },
+      {
+        type: ENEMIES.AIRPLANE,
+        x: 30,
+        z: -650,
+        movement: MOVEMENTS.STRAIGHT,
+        direction: MOVEMENTS.DIRECTIONS.STRAIGHT_FORWARD,
+      },
+      {
+        type: ENEMIES.AIRPLANE,
+        x: -50,
+        z: -750,
+        movement: MOVEMENTS.STRAIGHT,
+        direction: MOVEMENTS.DIRECTIONS.STRAIGHT_RIGHT,
+      },
+      {
+        type: ENEMIES.AIRPLANE,
+        x: -40,
+        z: -850,
+        movement: MOVEMENTS.STRAIGHT,
+        direction: MOVEMENTS.DIRECTIONS.STRAIGHT_FORWARD,
+      },
+      {
+        type: ENEMIES.AIRPLANE,
+        x: 60,
+        z: -1050,
+        movement: MOVEMENTS.DIAGONAL,
+        direction: MOVEMENTS.DIRECTIONS.DIAGONAL_LEFT,
+      },
+      {
+        type: ENEMIES.AIRPLANE,
+        x: -60,
+        z: -1150,
+        movement: MOVEMENTS.DIAGONAL,
+        direction: MOVEMENTS.DIRECTIONS.DIAGONAL_RIGHT,
+      },
+      {
+        type: ENEMIES.AIRPLANE,
+        x: 10,
+        z: -1350,
+        movement: MOVEMENTS.ARC,
+        direction: MOVEMENTS.DIRECTIONS.ARC_LEFT,
+      },
+      {
+        type: ENEMIES.AIRPLANE,
+        x: -10,
+        z: -1350,
+        movement: MOVEMENTS.ARC,
+        direction: MOVEMENTS.DIRECTIONS.ARC_RIGHT,
+      },
+      {
+        type: ENEMIES.TANK,
+        x: -60,
+        z: -1550,
+      },
+      {
+        type: ENEMIES.TANK,
+        x: 60,
+        z: -1750,
+      },
+      {
+        type: ENEMIES.AIRPLANE,
+        x: -80,
+        z: -1850,
+        movement: MOVEMENTS.STRAIGHT,
+        direction: MOVEMENTS.DIRECTIONS.STRAIGHT_RIGHT,
+      },
+      {
+        type: ENEMIES.AIRPLANE,
+        x: 40,
+        z: -1950,
+        movement: MOVEMENTS.ARC,
+        direction: MOVEMENTS.DIRECTIONS.ARC_LEFT,
+      },
+      {
+        type: ENEMIES.TANK,
+        x: -10,
+        z: -2050,
+      },
+
+      /**
+       * Teste de movimentos dos inimigos
+       * 
+      {
+        type: ENEMIES.AIRPLANE,
+        x: 0,
+        z: -250,
+        movement: MOVEMENTS.STRAIGHT,
+        direction: MOVEMENTS.DIRECTIONS.STRAIGHT_FORWARD,
+      },
+      {
+        type: ENEMIES.AIRPLANE,
+        x: 0,
+        z: -250,
+        movement: MOVEMENTS.STRAIGHT,
+        direction: MOVEMENTS.DIRECTIONS.STRAIGHT_LEFT,
+      },
+      {
+        type: ENEMIES.AIRPLANE,
+        x: 0,
+        z: -250,
+        movement: MOVEMENTS.STRAIGHT,
+        direction: MOVEMENTS.DIRECTIONS.STRAIGHT_RIGHT,
+      },
+      {
+        type: ENEMIES.AIRPLANE,
+        x: 0,
+        z: -250,
+        movement: MOVEMENTS.DIAGONAL,
+        direction: MOVEMENTS.DIRECTIONS.DIAGONAL_LEFT,
+      },
+      {
+        type: ENEMIES.AIRPLANE,
+        x: 0,
+        z: -250,
+        movement: MOVEMENTS.DIAGONAL,
+        direction: MOVEMENTS.DIRECTIONS.DIAGONAL_RIGHT,
+      },
       {
         type: ENEMIES.AIRPLANE,
         x: 0,
@@ -25,40 +156,7 @@ export default {
         movement: MOVEMENTS.ARC,
         direction: MOVEMENTS.DIRECTIONS.ARC_RIGHT,
       },
-      { type: ENEMIES.AIRPLANE, x: -30, z: -550 },
-      { type: ENEMIES.AIRPLANE, x: 20, z: -850 },
-
-      {
-        type: ENEMIES.AIRPLANE,
-        x: 10,
-        z: -1150,
-        movement: MOVEMENTS.ARC,
-        direction: MOVEMENTS.DIRECTIONS.ARC_RIGHT,
-      },
-      { type: ENEMIES.AIRPLANE, x: -20, z: -1300 },
-      {
-        type: ENEMIES.AIRPLANE,
-        x: -5,
-        z: -1450,
-        movement: MOVEMENTS.STRAIGHT,
-        direction: MOVEMENTS.DIRECTIONS.STRAIGHT_LEFT,
-      },
-
-      { type: ENEMIES.AIRPLANE, x: -35, z: -1600 },
-      { type: ENEMIES.TANK, x: 25, z: -1750 },
-      { type: ENEMIES.AIRPLANE, x: 5, z: -1900 },
-
-      { type: ENEMIES.AIRPLANE, x: 5, z: -2200 },
-      { type: ENEMIES.AIRPLANE, x: 50, z: -2100 },
-      { type: ENEMIES.TANK, x: -40, z: -2200 },
-
-      { type: ENEMIES.AIRPLANE, x: -10, z: -2300 },
-      { type: ENEMIES.AIRPLANE, x: 10, z: -2400 },
-      { type: ENEMIES.TANK, x: -40, z: -2500 },
-
-      { type: ENEMIES.AIRPLANE, x: 5, z: -2600 },
-      { type: ENEMIES.AIRPLANE, x: 35, z: -2700 },
-      { type: ENEMIES.AIRPLANE, x: -50, z: -2800 },
+      */
     ],
     items: [
       /**

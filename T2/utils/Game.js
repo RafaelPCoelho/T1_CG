@@ -38,11 +38,7 @@ const Game = function () {
 
         case ENEMIES.TANK: {
           cannons.add(
-            new THREE.Vector3(
-              enemy.x,
-              2,
-              enemy.z + enemy.z + inputLevels[level].z
-            )
+            new THREE.Vector3(enemy.x, 2, enemy.z + inputLevels[level].z)
           );
           break;
         }

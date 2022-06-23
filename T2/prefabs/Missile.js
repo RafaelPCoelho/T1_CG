@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { checkCollision } from "../libs/Collision/index.js";
 import { predictPosition } from "../libs/utils/funcs.js";
 import { distVec } from "../libs/utils/vec.js";
 import { airplane, camera, scene } from "../script.js";
@@ -35,7 +36,7 @@ const Missile = function (position, onDestroy) {
     if (!this.inPosition) {
       this.mesh.translateY(this.raiseVelocity * (dt / 1000));
 
-      // Stop raising Y when reach position
+      // Para de subir quando alcancar a altura do aviao
       if (this.mesh.position.y >= airplane.mesh.position.y) {
         this.inPosition = true;
         this.mesh.lookAt(
@@ -53,6 +54,11 @@ const Missile = function (position, onDestroy) {
       this.mesh.translateZ(this.speed * (dt / 1000));
       this.mesh.position.z += camera.vz;
       this.distance += this.speed * (dt / 1000);
+
+      if (checkCollision(this.mesh, airplane.mesh)) {
+        airplane.damage(50);
+        this.destroy();
+      }
 
       if (this.distance >= this.maxDistance) this.destroy();
     }

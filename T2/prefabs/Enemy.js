@@ -26,13 +26,14 @@ const Enemy = function (
     this.vz = Math.random();
     this.vz = Math.max(0.4, Math.min(this.vz, 0.7));
     this.vy = 0;
-    this.alive = true;
-    this.bullets = new EntityList(EnemyBullet);
-    this.fireRate = 0.1;
+    this.alive = true; // Estado do inimigo
+    this.bullets = new EntityList(EnemyBullet); // Lista de balas
+    this.fireRate = 0.2; // Frequencia de tiros, 1 = 100ms
     this.bulletTicker = new Ticker(100 / this.fireRate, () => {
       this.bullets.add(this.mesh.position);
-    });
-    this.frame = 1;
+    }); // Gerador automatico de tiros de acordo com fireRate
+    this.frame = 1; // Frame contador para animacao de rotacao do aviao
+    this.distanceToActivate = 300; // Distancia do jogador para comecar a tirar e se mover
 
     this.mesh.position.copy(position);
     scene.add(this.mesh);
@@ -85,7 +86,27 @@ const Enemy = function (
         this.frame += 0.2 * (dt / 1000);
         this.frame = clamp(this.frame, 0, Math.PI / 2);
         this.mesh.translateZ(Math.sin(this.frame + Math.PI / 2) * 2.5);
-        this.mesh.translateX((dx * -Math.cos(this.frame - Math.PI / 2)) / 1.5);
+        this.mesh.translateX((dx * Math.cos(this.frame - Math.PI / 2)) / 2);
+
+        break;
+      }
+
+      case MOVEMENTS.DIAGONAL: {
+        let dx;
+        switch (direction) {
+          case MOVEMENTS.DIRECTIONS.DIAGONAL_LEFT: {
+            dx = -1;
+            break;
+          }
+
+          case MOVEMENTS.DIRECTIONS.DIAGONAL_RIGHT: {
+            dx = 1;
+            break;
+          }
+        }
+
+        this.mesh.translateZ(20 * (dt / 1000));
+        this.mesh.translateX(dx * 20 * (dt / 1000));
 
         break;
       }
@@ -117,7 +138,10 @@ const Enemy = function (
     }
 
     // Anda e atira apenas se estiver no campo de visão do aviao
-    if (this.mesh.position.distanceTo(airplane.mesh.position) <= 500) {
+    if (
+      this.mesh.position.distanceTo(airplane.mesh.position) <=
+      this.distanceToActivate
+    ) {
       this.bulletTicker.update(dt);
       this.move(dt);
     }

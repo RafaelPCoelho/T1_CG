@@ -6,29 +6,29 @@ import { scene, camera, airplane } from "../script.js";
 import MisselLauncher from "../utils/MisselLauncher.js";
 
 const Cannon = function (position, onDestroy) {
-  this.geometry = new THREE.BoxGeometry(10, 2, 10);
-  this.material = new THREE.MeshStandardMaterial();
-  this.mesh = new THREE.Mesh(this.geometry, this.material);
-
-  this.launcher = new MisselLauncher(this.mesh.position);
-
-  this.alive = true;
-  this.counter = 0;
-  this.shootInterval = 3.5;
-  this.nextShoot = 0;
-
-  this.missiles = new EntityList(Missile);
-
   // Inicia a posicao com base no parametro position
   this.init = () => {
-    scene.add(this.mesh);
+    this.geometry = new THREE.BoxGeometry(20, 10, 20);
+    this.material = new THREE.MeshStandardMaterial();
+    this.mesh = new THREE.Mesh(this.geometry, this.material);
+
+    this.launcher = new MisselLauncher(this.mesh.position);
+
+    this.alive = true;
+    this.counter = 0;
+    this.shootInterval = 3.5;
+    this.nextShoot = 0;
+
+    this.missiles = new EntityList(Missile);
+
+    // scene.add(this.mesh);
     if (position) this.mesh.position.copy(position);
     else this.mesh.position.set(0, 1, -200);
   };
 
   this.destroy = () => {
     this.alive = false;
-    scene.remove(this.mesh);
+    scene.remove(this.launcher.launcher);
   };
 
   this.deathBehaviour = (dt) => {
@@ -57,6 +57,10 @@ const Cannon = function (position, onDestroy) {
   };
 
   this.update = (dt) => {
+    if (camera.cameraTransform.position.z + 140 < this.mesh.position.z) {
+      this.destroy();
+    }
+
     var farFromCamera = this.mesh.position.distanceTo(
       camera.cameraTransform.position
     );

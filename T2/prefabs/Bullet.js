@@ -2,17 +2,20 @@ import * as THREE from "three";
 import { scene, camera } from "../script.js";
 
 const Bullet = function (position, onDestroy) {
-  this.mesh = new THREE.Mesh(
-    new THREE.BoxGeometry(1, 1, 10),
-    new THREE.MeshStandardMaterial({
-      color: "#ffff00",
-    })
-  );
-
   // Inicia a munição e suas propriedades
   this.init = () => {
-    this.speed = 5;
-    this.mesh.position.set(position.x, position.y, position.z);
+    this.mesh = new THREE.Mesh(
+      new THREE.BoxGeometry(1, 1, 10),
+      new THREE.MeshStandardMaterial({
+        color: "#ffff00",
+      })
+    );
+
+    this.speed = -5;
+    this.startPos = position.clone();
+    this.maxDist = 400;
+
+    this.mesh.position.copy(position);
     scene.add(this.mesh);
   };
 
@@ -28,9 +31,9 @@ const Bullet = function (position, onDestroy) {
   // Atualiza o estado da bala e verifica se ela já chegou
   // no limite do cenário
   this.update = () => {
-    this.mesh.translateZ(-this.speed);
+    this.mesh.translateZ(this.speed);
 
-    if (this.mesh.position.z < camera.cameraTransform.position.z - 250)
+    if (this.mesh.position.distanceTo(this.startPos) > this.maxDist)
       this.destroy();
   };
 

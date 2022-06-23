@@ -93,18 +93,34 @@ const Airplane = function () {
     this.torpedos.add(this.mesh.position, -this.torpedoAngle);
   };
 
-  // Roda o comportamento do avião quando seu estado é: vivo
-  this.aliveBehaviour = (dt) => {
-    var { x, y, z } = this.mesh.position;
-    var cam = camera.cameraTransform;
+  // Define o comportamento das teclas
+  this.keys = () => {
+    if (game.gamemode == GAMEMODES.SURVIVAL) {
+      if (keyboard.pressed("A") || keyboard.pressed("left")) this.vx = -1;
+      if (keyboard.pressed("D") || keyboard.pressed("right")) this.vx = 1;
+      if (keyboard.pressed("W") || keyboard.pressed("up")) this.vz = -2;
+      if (keyboard.pressed("S") || keyboard.pressed("down")) this.vz = 0.5;
+      if (
+        keyboard.up("W") ||
+        keyboard.up("S") ||
+        keyboard.up("up") ||
+        keyboard.up("down")
+      )
+        this.vz = -1;
+    } else {
+      if (keyboard.pressed("A") || keyboard.pressed("left")) this.vx = -4;
+      if (keyboard.pressed("D") || keyboard.pressed("right")) this.vx = 4;
+      if (keyboard.pressed("W") || keyboard.pressed("up")) this.vz = -4;
+      if (keyboard.pressed("S") || keyboard.pressed("down")) this.vz = 4;
+      if (
+        keyboard.up("W") ||
+        keyboard.up("S") ||
+        keyboard.up("up") ||
+        keyboard.up("down")
+      )
+        this.vz = 0;
+    }
 
-    // Define o comportamento dos controles
-    if (keyboard.pressed("A") || keyboard.pressed("left")) this.vx = -1;
-    if (keyboard.pressed("D") || keyboard.pressed("right")) this.vx = 1;
-    if (keyboard.pressed("W") || keyboard.pressed("up")) this.vz = -2;
-    if (keyboard.pressed("S") || keyboard.pressed("down"))
-      if (game.gamemode == GAMEMODES.SURVIVAL) this.vz = 0.5;
-      else this.vz = 2;
     if (
       keyboard.up("A") ||
       keyboard.up("D") ||
@@ -113,17 +129,23 @@ const Airplane = function () {
     ) {
       this.vx = 0;
     }
-    if (
-      keyboard.up("W") ||
-      keyboard.up("S") ||
-      keyboard.up("up") ||
-      keyboard.up("down")
-    ) {
-      if (game.gamemode == GAMEMODES.SURVIVAL) this.vz = -1;
-      else this.vz = 0;
+
+    if (keyboard.down("T")) this.torpedoMark.show();
+    if (keyboard.up("T")) {
+      this.torpedoMark.hide();
+      this.torpedo();
     }
-    if (keyboard.down("T")) this.torpedo();
+
     if (keyboard.down("space") || keyboard.down("ctrl")) this.shoot();
+  };
+
+  // Roda o comportamento do avião quando seu estado é: vivo
+  this.aliveBehaviour = (dt) => {
+    var { x, y, z } = this.mesh.position;
+    var cam = camera.cameraTransform;
+
+    // Escuta aos eventos do teclado
+    this.keys();
 
     // Define a posição do avião, limitando as laterais e a profundidade
     this.mesh.position.set(
@@ -177,8 +199,8 @@ const Airplane = function () {
 
     if (this.mesh.position.y <= 0) {
       this.gameOver = true;
-      alert("Game Over");
-      window.location.reload();
+      // alert("Game Over");
+      // window.location.reload();
     }
   };
 
@@ -189,7 +211,7 @@ const Airplane = function () {
   };
 
   this.damage = (value) => {
-    if (!this.alive) return;
+    if (!this.alive || game.gamemode == GAMEMODES.CREATIVE) return;
 
     this.health = clamp(this.health - Math.abs(value), 0, 100);
     this.canRegenerate = false;
