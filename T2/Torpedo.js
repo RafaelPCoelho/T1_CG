@@ -8,6 +8,7 @@ const Torpedo = function (position, angle, onDestroy) {
     new THREE.BoxGeometry(1, 1, 5),
     new THREE.MeshStandardMaterial()
   );
+  //this.mesh.castShadow = true;
 
   this.init = () => {
     scene.add(this.mesh);

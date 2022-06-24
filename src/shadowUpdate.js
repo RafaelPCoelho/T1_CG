@@ -176,7 +176,7 @@ function moveLightAndTarget()
                                     centerTorus.position.z);   
   dynamicLight.target.updateMatrixWorld();
 
-  spotHelper.update();  
+  //spotHelper.update();  
 }
 
 

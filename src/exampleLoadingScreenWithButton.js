@@ -40,8 +40,8 @@ const loadingManager = new THREE.LoadingManager( () => {
 loadColladaObject(loadingManager, ' ../assets/objects/stormtrooper/stormtrooper.dae');
 loadGLTFObject(loadingManager, '../assets/objects/r2d2/scene.gltf');
 loadAudio(loadingManager, '../assets/sounds/imperial.mp3');
-let gridHelper = new THREE.PolarGridHelper( 9 );
-scene.add( gridHelper );
+// let gridHelper = new THREE.PolarGridHelper( 9 );
+// scene.add( gridHelper );
 
 render();
 
@@ -55,12 +55,12 @@ function onButtonPressed() {
     element.remove();  
   });  
   // Config and play the loaded audio
-  let sound = new THREE.Audio( new THREE.AudioListener() );
-  audioLoader.load( audioPath, function( buffer ) {
-    sound.setBuffer( buffer );
-    sound.setLoop( true );
-    sound.play(); 
-  });
+  // let sound = new THREE.Audio( new THREE.AudioListener() );
+  // audioLoader.load( audioPath, function( buffer ) {
+  //   sound.setBuffer( buffer );
+  //   sound.setLoop( true );
+  //   sound.play(); 
+  // });
 }
 
 function loadColladaObject(manager, object)
@@ -92,19 +92,19 @@ function loadAudio(manager, audio)
 }
 
 // Function to rotate the man around the center object
-function rotateR2D2(delta) {
-  if(r2d2) {
-    let radius = 7.0;
-    let scale = 0.005;
-    time+=delta*30;
-    var mat4 = new THREE.Matrix4();
-    r2d2.matrixAutoUpdate = false;
-    r2d2.matrix.identity();  // reset matrix
-    r2d2.matrix.multiply(mat4.makeRotationY(degreesToRadians(-time)));
-    r2d2.matrix.multiply(mat4.makeTranslation(radius, 0.0, 0.0));
-    r2d2.matrix.multiply(mat4.makeScale(scale,scale,scale));
-  }
-}
+// function rotateR2D2(delta) {
+//   if(r2d2) {
+//     let radius = 7.0;
+//     let scale = 0.005;
+//     time+=delta*30;
+//     var mat4 = new THREE.Matrix4();
+//     r2d2.matrixAutoUpdate = false;
+//     r2d2.matrix.identity();  // reset matrix
+//     r2d2.matrix.multiply(mat4.makeRotationY(degreesToRadians(-time)));
+//     r2d2.matrix.multiply(mat4.makeTranslation(radius, 0.0, 0.0));
+//     r2d2.matrix.multiply(mat4.makeScale(scale,scale,scale));
+//   }
+// }
 
 function render() {
     const delta = clock.getDelta();

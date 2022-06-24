@@ -8,6 +8,8 @@ const Cannon = function (position, onDestroy) {
   this.geometry = new THREE.BoxGeometry(10, 2, 10);
   this.material = new THREE.MeshStandardMaterial();
   this.mesh = new THREE.Mesh(this.geometry, this.material);
+  //this.mesh.castShadow = true;
+  this.mesh.receiveShadow = true;
 
   this.alive = true;
   this.counter = 0;

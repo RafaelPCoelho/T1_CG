@@ -9,6 +9,7 @@ const Enemy = function (onDestroy) {
       color: "rgb(150, 60, 30)",
     })
   );
+  this.mesh.castShadow = true;
 
   this.vx = Math.random();
   this.vz = Math.random();

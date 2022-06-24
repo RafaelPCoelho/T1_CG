@@ -8,6 +8,7 @@ const Bullet = function (position, onDestroy) {
       color: "#ffff00",
     })
   );
+  this.mesh.castShadow = true;
 
   // Inicia a munição e suas propriedades
   this.init = () => {

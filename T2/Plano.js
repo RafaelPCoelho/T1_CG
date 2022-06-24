@@ -12,6 +12,8 @@ var Plano = function () {
   this.alternadorDePlano = true;
   this.proxPlano = -1200;
   this.novaPosition = 0;
+  this.plano1.receiveShadow = true;
+  this.plano2.receiveShadow = true;
 
   // Inicia os dois planos
   this.init = () => {

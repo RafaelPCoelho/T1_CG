@@ -34,6 +34,7 @@ const Airplane = function () {
     new THREE.ConeGeometry(this.radius, this.size),
     this.material
   );
+  this.mesh.castShadow = true;
 
   // Inicia o avião com as configurações padrão
   this.init = () => {

@@ -6,6 +6,7 @@ const TargetProjection = function (position, angle) {
     new THREE.TorusGeometry(2, 0.2, 50, 50),
     new THREE.MeshStandardMaterial({ color: "red" })
   );
+  //this.mesh.castShadow = true;
 
   this.init = () => {
     this.mesh.rotateX(-Math.PI / 2);
