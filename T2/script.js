@@ -15,7 +15,6 @@ import EntityList from "./libs/EntityList.js";
 import Ticker from "./libs/Ticker.js";
 import Game from "./utils/Game.js";
 import Light from "./Light.js";
-import { lightFollowingCamera } from "../libs/util/util.js";
 
 var stats = new Stats(); // To show FPS information
 var scene = new THREE.Scene(); // Create main scene
@@ -139,9 +138,8 @@ function render(time) {
   // Funcao de Plano Infinito
   plano.update();
 
-  // Atualiza a luz
-  //light.update();
-  //light.position.set(camera.cameraTransform.position);
+  // Atualiza a posicao da luz
+  light.update();
 
   // Atualiza componentes passando o deltaTime, enquanto o jogo não estiver acabado
   if (!airplane.gameOver) {
