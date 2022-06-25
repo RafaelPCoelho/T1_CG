@@ -123,6 +123,8 @@ function render(time) {
   // Funcao de Plano Infinito
   plano.update();
 
+  light.update();
+
   // Atualiza componentes passando o deltaTime, enquanto o jogo não estiver acabado
   if (!airplane.gameOver) {
     keyboard.update();
@@ -144,6 +146,7 @@ function render(time) {
   //   )
   // );
 
+  viewport();
   stats.update(); // Update FPS
   requestAnimationFrame(render);
   renderer.render(scene, camera.camera); // Render scene
