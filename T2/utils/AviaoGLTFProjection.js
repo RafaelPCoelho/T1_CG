@@ -4,6 +4,8 @@ import { degreesToRadians } from "../../libs/util/util.js";
 
 const AviaoGLTFProjection = function (position) {
   const loader = new GLTFLoader();
+  this.aviao = null;
+
   loader.load(
     "./assets/aviaoGLTF.gltf",
     (gltf) => {

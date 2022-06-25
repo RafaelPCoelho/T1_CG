@@ -18,20 +18,30 @@ import Game from "./utils/Game.js";
 import Item from "./prefabs/Item.js";
 import { GAMEMODES } from "./utils/Consts.js";
 import DebugBox from "./prefabs/DebugBox.js";
+import Light from "./Light.js";
 
 var stats = new Stats(); // To show FPS information
 var scene = new THREE.Scene(); // Create main scene
-var light = initDefaultBasicLight(scene);
-var renderer = initRenderer(); // View function in util/utils
+
+var renderer = new THREE.WebGLRenderer();
+document.getElementById("webgl-output").appendChild(renderer.domElement);
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.VSMShadowMap;
+
 const basicMaterial = new THREE.MeshLambertMaterial({
   color: "rgb(255, 0, 0)",
 });
+
+var ambientLight = new THREE.HemisphereLight("White", "darklategrey", 0.4);
+scene.add(ambientLight);
 
 var keyboard = new KeyboardState();
 var camera = new Camera();
 var airplane = new Airplane();
 var plano = new Plano();
 var game = new Game();
+var light = new Light();
 
 var cannons = new EntityList(Cannon);
 var enemies = new EntityList(Enemy);
