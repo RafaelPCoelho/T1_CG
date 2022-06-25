@@ -55,6 +55,43 @@ var fps = 0;
 
 var info = new InfoBox();
 
+function viewport() {
+  var width = window.innerWidth;
+  var height = window.innerHeight;
+
+  //main viewport
+  renderer.setViewport(0, 0, width, height);
+  renderer.setScissorTest(false);
+  renderer.clear();
+  renderer.render(scene, camera.camera);
+
+  renderer.setViewport(0, 0, 250, 100);
+  renderer.setScissor(0, 0, 250, 100);
+  renderer.setScissorTest(true);
+  //renderer.setClearColor("rgb(60, 50, 150)");
+  renderer.clear();
+  renderer.render(scene, camera.camera);
+}
+
+// function interface (){
+//   const loadingManager = new THREE.LoadingManager( () => {
+//     let loadingScreen = document.getElementById( 'loading-screen' );
+//     loadingScreen.transition = 0;
+//     loadingScreen.style.setProperty('--speed1', '0');
+//     loadingScreen.style.setProperty('--speed2', '0');
+//     loadingScreen.style.setProperty('--speed3', '0');
+
+//     let button  = document.getElementById("myBtn")
+//     button.style.backgroundColor = 'Red';
+//     button.innerHTML = 'Click to Enter';
+//     button.addEventListener("click", onButtonPressed);
+//   });
+
+//   // Loading
+//   //nameLoad(loadingManager, endereço);
+
+// }
+
 // var debugBox = new DebugBox(3);
 
 render(0);
