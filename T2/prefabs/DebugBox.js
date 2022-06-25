@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { scene } from "../script.js";
 
+// Caixa para debugar posicoes
 const DebugBox = function (size = 1) {
   this.init = () => {
     this.geometry = new THREE.BoxGeometry(size, size, size);

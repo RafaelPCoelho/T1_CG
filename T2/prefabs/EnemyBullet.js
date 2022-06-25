@@ -4,6 +4,7 @@ import { predictPosition } from "../libs/utils/funcs.js";
 import { airplane, scene } from "../script.js";
 
 const EnemyBullet = function (position, onDestroy) {
+  // Inicia a bala já prevendo a posicao do inimigo
   this.init = () => {
     this.geometry = new THREE.SphereGeometry(1);
     this.material = new THREE.MeshStandardMaterial({ color: "red" });
@@ -39,6 +40,7 @@ const EnemyBullet = function (position, onDestroy) {
     airplane.damage(20);
   };
 
+  // Anda reto até que atinja o alvo ou uma distancia limite
   this.update = (dt) => {
     this.collision();
 

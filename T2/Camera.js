@@ -31,6 +31,7 @@ const Camera = function () {
     if (!this.died) {
       this.died = true;
     } else if (this.deathTimer < this.delayAfterDie) {
+      // Se o aviao morreu, continua se movimentando por um tempo
       this.deathTimer += dt / 1000;
       this.cameraTransform.translateZ(this.vz);
     }

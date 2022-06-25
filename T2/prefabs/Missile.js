@@ -51,6 +51,7 @@ const Missile = function (position, onDestroy) {
         );
       }
     } else {
+      // Caso já esteja na altura do aviao, avança em linha reta
       this.mesh.translateZ(this.speed * (dt / 1000));
       this.mesh.position.z += camera.vz;
       this.distance += this.speed * (dt / 1000);

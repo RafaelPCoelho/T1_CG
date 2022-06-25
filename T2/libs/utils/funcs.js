@@ -1,4 +1,15 @@
-// Dado uma variavel do tipo objeto
+import * as THREE from "three";
+
+/**
+ * Dada uma variavel do tipo objeto, adiciona um novo valor-chave,
+ * sempre incrementando à chave para evitar colisões e retorna a mesma
+ *
+ * @param {object} object
+ * @param {*} value
+ * @returns {void}
+ */
+
+// Dada uma variavel do tipo objeto
 // adiciona uma nova chave-valor
 // com a chave sempre sendo incrementada,
 // para não haver colisões de chaves
@@ -19,6 +30,21 @@ export const iterateCalling = (
   targetArray.forEach((value) => value[functionName](params));
 };
 
+/**
+ * Prevê a posição de {to} com base na demora que {from} levará para chegar à {to}
+ * na velocidade {speedFrom}, sendo que {to} também está se movendo na velocidade
+ * de {speedTarget}. Além disso, a funcção conta com o parâmetro {spread} que define
+ * a variação da bala, que aumenta e diminui a chance de acertos.
+ *
+ * Usado para prever a posição de um alvo
+ * @param {THREE.Vector3} from Posição do inimigo
+ * @param {THREE.Vector3} to Posição do avião
+ * @param {number} speedFrom Velocidade da bala
+ * @param {THREE.Vector3} speedTarget Velocidade do avião ( em 3 dimensões )
+ * @param {number} variation Espalhamento dos tiros
+ * @param {number} dt // DeltaTempo estimado para calculo do tempo até o alcance
+ * @returns
+ */
 export const predictPosition = (
   from,
   to,
@@ -27,6 +53,7 @@ export const predictPosition = (
   variation,
   dt = 16.66
 ) => {
+  // Calcula posicoes e distancia ate o alvo
   let projection = to.clone();
   let dist = projection.distanceTo(from);
   let saveY = projection.y;
@@ -41,6 +68,7 @@ export const predictPosition = (
       .addScalar(-variation + Math.random() * 2 * variation)
   );
 
+  // Retorna a altura anterior ja que a mesma é fixa
   projection.setY(saveY);
 
   return projection;

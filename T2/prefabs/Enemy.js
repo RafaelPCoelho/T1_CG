@@ -48,6 +48,7 @@ const Enemy = function (
   // Movimenta o inimigo de acordo com o parametro passado
   this.move = (dt) => {
     switch (movement) {
+      // Movimento em linha reta
       case MOVEMENTS.STRAIGHT: {
         switch (direction) {
           case MOVEMENTS.DIRECTIONS.STRAIGHT_LEFT: {
@@ -68,6 +69,7 @@ const Enemy = function (
         break;
       }
 
+      // Movimento de curva
       case MOVEMENTS.ARC: {
         let dx;
 
@@ -91,6 +93,7 @@ const Enemy = function (
         break;
       }
 
+      // Movimento nas diagonais
       case MOVEMENTS.DIAGONAL: {
         let dx;
         switch (direction) {

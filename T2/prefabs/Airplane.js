@@ -210,6 +210,7 @@ const Airplane = function () {
     else this.deathBehaviour(dt);
   };
 
+  // Da dano no aviao, respeitando os limites da vida e o modo de jogo
   this.damage = (value) => {
     if (!this.alive || game.gamemode == GAMEMODES.CREATIVE) return;
 

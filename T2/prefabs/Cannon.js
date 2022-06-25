@@ -31,6 +31,7 @@ const Cannon = function (position, onDestroy) {
     scene.remove(this.launcher.launcher);
   };
 
+  // Só destroy de verdade quando todos os misseis já estiverem sido destruidos
   this.deathBehaviour = (dt) => {
     if (this.missiles.isEmpty()) {
       if (onDestroy) onDestroy();
