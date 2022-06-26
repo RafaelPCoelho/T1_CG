@@ -7,6 +7,7 @@ const DebugBox = function (size = 1) {
     this.geometry = new THREE.BoxGeometry(size, size, size);
     this.material = new THREE.MeshStandardMaterial({ color: "red" });
     this.mesh = new THREE.Mesh(this.geometry, this.material);
+    this.mesh.castShadow = true;
 
     scene.add(this.mesh);
   };

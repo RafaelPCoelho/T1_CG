@@ -130,13 +130,13 @@ const Airplane = function () {
       this.vx = 0;
     }
 
-    if (keyboard.down("T")) this.torpedoMark.show();
-    if (keyboard.up("T")) {
+    if (keyboard.down("space")) this.torpedoMark.show();
+    if (keyboard.up("space")) {
       this.torpedoMark.hide();
       this.torpedo();
     }
 
-    if (keyboard.down("space") || keyboard.down("ctrl")) this.shoot();
+    if (keyboard.down("ctrl")) this.shoot();
   };
 
   // Roda o comportamento do avião quando seu estado é: vivo
@@ -199,8 +199,8 @@ const Airplane = function () {
 
     if (this.mesh.position.y <= 0) {
       this.gameOver = true;
-      // alert("Game Over");
-      // window.location.reload();
+      alert("Game Over");
+      window.location.reload();
     }
   };
 

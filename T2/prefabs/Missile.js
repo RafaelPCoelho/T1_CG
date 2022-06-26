@@ -9,6 +9,7 @@ const Missile = function (position, onDestroy) {
     this.geometry = new THREE.BoxGeometry(2, 2, 2);
     this.material = new THREE.MeshStandardMaterial({ color: "red" });
     this.mesh = new THREE.Mesh(this.geometry, this.material);
+    this.mesh.castShadow = true;
 
     this.alive = true;
     this.raiseVelocity = 100;

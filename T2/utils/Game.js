@@ -60,7 +60,7 @@ const Game = function () {
   };
 
   this.update = (dt) => {
-    if (keyboard.down("M")) {
+    if (keyboard.down("G")) {
       if (this.gamemode == GAMEMODES.SURVIVAL) this.setGamemodeCreative();
       else this.setGamemodeSurvival();
     }

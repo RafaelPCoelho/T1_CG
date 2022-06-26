@@ -9,6 +9,7 @@ const EnemyBullet = function (position, onDestroy) {
     this.geometry = new THREE.SphereGeometry(1);
     this.material = new THREE.MeshStandardMaterial({ color: "red" });
     this.mesh = new THREE.Mesh(this.geometry, this.material);
+    this.mesh.castShadow = true;
 
     this.speed = 200;
     this.dist = 0;

@@ -10,6 +10,7 @@ const Bullet = function (position, onDestroy) {
         color: "#ffff00",
       })
     );
+    this.mesh.castShadow = true;
 
     this.speed = -5;
     this.startPos = position.clone();

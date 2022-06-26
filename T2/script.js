@@ -4,7 +4,7 @@ import {
   initRenderer,
   InfoBox,
   onWindowResize,
-  initDefaultBasicLight,
+  initCamera,
 } from "../libs/util/util.js";
 import KeyboardState from "../libs/util/KeyboardState.js";
 import Airplane from "./prefabs/Airplane.js";
@@ -19,6 +19,7 @@ import Item from "./prefabs/Item.js";
 import { GAMEMODES } from "./utils/Consts.js";
 import DebugBox from "./prefabs/DebugBox.js";
 import Light from "./Light.js";
+import HealthBar from "./utils/HealthBar.js";
 
 var stats = new Stats(); // To show FPS information
 var scene = new THREE.Scene(); // Create main scene
@@ -28,6 +29,7 @@ document.getElementById("webgl-output").appendChild(renderer.domElement);
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.VSMShadowMap;
+renderer.autoClear = false;
 
 const basicMaterial = new THREE.MeshLambertMaterial({
   color: "rgb(255, 0, 0)",
@@ -43,9 +45,18 @@ var plano = new Plano();
 var game = new Game();
 var light = new Light();
 
+var healthBar = new HealthBar();
+
 var cannons = new EntityList(Cannon);
 var enemies = new EntityList(Enemy);
 var items = new EntityList(Item);
+
+// Camera auxiliar para Viewport
+var vcWidth = 400;
+var vcHeidth = 100;
+var virtualCamera = new THREE.PerspectiveCamera(45, vcWidth/vcHeidth, 1, 200);
+virtualCamera.position.set(0, 1000, -50);
+virtualCamera.lookAt(healthBar.mesh.position);
 
 game.loadLevel(1);
 
@@ -75,34 +86,14 @@ function viewport() {
   renderer.clear();
   renderer.render(scene, camera.camera);
 
-  renderer.setViewport(0, 0, 250, 100);
-  renderer.setScissor(0, 0, 250, 100);
+  //viewport auxiliar
+  renderer.setViewport(0, 0, vcWidth, vcHeidth);
+  renderer.setScissor(0, 0, vcWidth, vcHeidth);
   renderer.setScissorTest(true);
   //renderer.setClearColor("rgb(60, 50, 150)");
-  renderer.clear();
-  renderer.render(scene, camera.camera);
+  renderer.clear(false);
+  renderer.render(scene, virtualCamera);
 }
-
-// function interface (){
-//   const loadingManager = new THREE.LoadingManager( () => {
-//     let loadingScreen = document.getElementById( 'loading-screen' );
-//     loadingScreen.transition = 0;
-//     loadingScreen.style.setProperty('--speed1', '0');
-//     loadingScreen.style.setProperty('--speed2', '0');
-//     loadingScreen.style.setProperty('--speed3', '0');
-
-//     let button  = document.getElementById("myBtn")
-//     button.style.backgroundColor = 'Red';
-//     button.innerHTML = 'Click to Enter';
-//     button.addEventListener("click", onButtonPressed);
-//   });
-
-//   // Loading
-//   //nameLoad(loadingManager, endereço);
-
-// }
-
-// var debugBox = new DebugBox(3);
 
 render(0);
 function render(time) {
@@ -134,6 +125,8 @@ function render(time) {
   plano.update();
 
   light.update();
+
+  healthBar.update();
 
   // Atualiza componentes passando o deltaTime, enquanto o jogo não estiver acabado
   if (!airplane.gameOver) {
