@@ -1,19 +1,19 @@
 import { GLTFLoader } from "../../build/jsm/loaders/GLTFLoader.js";
-import { Enemy, scene } from "../script.js";
+import { scene } from "../script.js";
 import { degreesToRadians } from "../../libs/util/util.js";
 
-const Enemy1GLTFProjection = function (position) {
-  const loader3 = new GLTFLoader();
-  this.inimigo3 = null;
+const Enemy3GLTFProjection = function (position) {
+  const loader = new GLTFLoader();
+  this.inimigo = null;
 
-  loader1.load(
+  loader.load(
     "./assets/Inimigo3GLTF.gltf",
     (gltf) => {
-      this.inimigo3 = gltf.scene;
-      this.inimigo3.rotateY(degreesToRadians(-90));
-      scene.add(this.inimigo3);
-      this.inimigo3.position.copy(position);
-      this.inimigo3.traverse(function (child) {
+      this.inimigo = gltf.scene;
+      this.inimigo.rotateY(degreesToRadians(-90));
+      scene.add(this.inimigo);
+      this.inimigo.position.copy(position);
+      this.inimigo.traverse(function (child) {
         if (child) child.castShadow = true;
       });
     },
@@ -22,4 +22,4 @@ const Enemy1GLTFProjection = function (position) {
   );
 };
 
-export default Enemy1GLTFProjection;
+export default Enemy3GLTFProjection;

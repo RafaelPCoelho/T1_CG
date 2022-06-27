@@ -7,7 +7,9 @@ import Ticker from "../utils/Ticker.js";
 import { scene, camera, airplane, game } from "../script.js";
 import { MAP, MOVEMENTS } from "../utils/Consts.js";
 import EnemyBullet from "./EnemyBullet.js";
-
+import Enemy1GLTFProjection from "../utils/Inimigo1GLTFProjection.js";
+import Enemy2GLTFProjection from "../utils/Inimigo2GLTFProjection.js";
+import Enemy3GLTFProjection from "../utils/Inimigo3GLTFProjection.js";
 const Enemy = function (
   position,
   movement = MOVEMENTS.STRAIGHT,
@@ -21,6 +23,22 @@ const Enemy = function (
         color: "rgb(150, 60, 30)",
       })
     );
+
+    this.enemyGLTF = null;
+    switch (movement) {
+      case MOVEMENTS.STRAIGHT: {
+        this.enemyGLTF = new Enemy1GLTFProjection(this.mesh.position);
+        break;
+      }
+      case MOVEMENTS.ARC: {
+        this.enemyGLTF = new Enemy2GLTFProjection(this.mesh.position);
+        break;
+      }
+      case MOVEMENTS.DIAGONAL: {
+        this.enemyGLTF = new Enemy3GLTFProjection(this.mesh.position);
+        break;
+      }
+    }
 
     this.vx = Math.random() * 20 + 20;
     this.vz = Math.random();
@@ -36,7 +54,7 @@ const Enemy = function (
     this.distanceToActivate = 300; // Distancia do jogador para comecar a tirar e se mover
 
     this.mesh.position.copy(position);
-    scene.add(this.mesh);
+    //scene.add(this.mesh);
   };
 
   // Define o estado do inimigo como morto
@@ -158,7 +176,8 @@ const Enemy = function (
   this.deathBehaviour = (dt) => {
     if (this.mesh.position.y <= 2) {
       setTimeout(() => {
-        scene.remove(this.mesh);
+        //scene.remove(this.mesh);
+        scene.remove(this.enemyGLTF.inimigo);
         if (onDestroy && this.bullets.isEmpty()) onDestroy();
       }, 1000);
     } else {
@@ -171,6 +190,9 @@ const Enemy = function (
   this.update = (dt) => {
     if (this.alive) this.aliveBehaviour(dt);
     else this.deathBehaviour(dt);
+
+    if (this.enemyGLTF.inimigo)
+      this.enemyGLTF.inimigo.position.copy(this.mesh.position);
 
     this.bullets.update(dt);
   };
