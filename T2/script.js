@@ -23,6 +23,7 @@ import HealthBar from "./utils/HealthBar.js";
 
 var stats = new Stats(); // To show FPS information
 var scene = new THREE.Scene(); // Create main scene
+var hudScene = new THREE.Scene();
 
 var renderer = new THREE.WebGLRenderer();
 document.getElementById("webgl-output").appendChild(renderer.domElement);
@@ -53,9 +54,9 @@ var items = new EntityList(Item);
 
 // Camera auxiliar para Viewport
 var vcWidth = 400;
-var vcHeidth = 100;
-var virtualCamera = new THREE.PerspectiveCamera(45, vcWidth/vcHeidth, 1, 200);
-virtualCamera.position.set(0, 1000, -50);
+var vcHeidth = 50;
+var virtualCamera = new THREE.OrthographicCamera(-100, 0, 1, 0);
+virtualCamera.position.set(0, -50, 0);
 virtualCamera.lookAt(healthBar.mesh.position);
 
 game.loadLevel(1);
@@ -90,7 +91,7 @@ function viewport() {
   renderer.setViewport(0, 0, vcWidth, vcHeidth);
   renderer.setScissor(0, 0, vcWidth, vcHeidth);
   renderer.setScissorTest(true);
-  //renderer.setClearColor("rgb(60, 50, 150)");
+  // renderer.setClearColor("rgb(0, 0, 0)");
   renderer.clear(false);
   renderer.render(scene, virtualCamera);
 }
@@ -126,7 +127,7 @@ function render(time) {
 
   light.update();
 
-  healthBar.update();
+  healthBar.update(deltaTime);
 
   // Atualiza componentes passando o deltaTime, enquanto o jogo não estiver acabado
   if (!airplane.gameOver) {
@@ -149,10 +150,10 @@ function render(time) {
   //   )
   // );
 
-  viewport();
   stats.update(); // Update FPS
   requestAnimationFrame(render);
-  renderer.render(scene, camera.camera); // Render scene
+  viewport();
+  // renderer.render(scene, camera.camera); // Render scene
 }
 
 export {
