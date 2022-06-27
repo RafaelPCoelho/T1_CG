@@ -6,12 +6,14 @@ import VidaCSG from "../utils/VidaCSG.js";
 const Item = function (type, position, value, onDestroy) {
   this.init = () => {
     this.geometry = new THREE.SphereGeometry(2);
+    this.vidaCSG = null;
 
     switch (type) {
       case "health": {
         //this.mesh = VidaCSG();
         //this.material = new THREE.MeshStandardMaterial({ color: "green" });;
-        scene.add(VidaCSG(position));
+        this.vidaCSG = VidaCSG(position);
+        scene.add(this.vidaCSG);
         //scene.add(this.mesh);
         break;
       }
@@ -31,11 +33,12 @@ const Item = function (type, position, value, onDestroy) {
     };
 
     this.mesh.position.copy(position);
-    scene.add(this.mesh);
+    if (!this.vidaCSG) scene.add(this.mesh);
   };
 
   this.destroy = () => {
     if (type == "health") scene.remove(this.VidaCSG);
+    scene.remove(this.vidaCSG);
     scene.remove(this.mesh);
     if (onDestroy) onDestroy();
   };
