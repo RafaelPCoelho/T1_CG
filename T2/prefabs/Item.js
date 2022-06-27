@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { checkCollision } from "../libs/Collision/index.js";
 import { airplane, scene } from "../script.js";
+import VidaCSG from "../utils/VidaCSG.js";
 
 const Item = function (type, position, value, onDestroy) {
   this.init = () => {
@@ -8,12 +9,18 @@ const Item = function (type, position, value, onDestroy) {
 
     switch (type) {
       case "health": {
-        this.material = new THREE.MeshStandardMaterial({ color: "green" });
+        //this.mesh = VidaCSG();
+        //this.material = new THREE.MeshStandardMaterial({ color: "green" });;
+        scene.add(VidaCSG(position));
+        //scene.add(this.mesh);
         break;
       }
 
       default: {
+        //this.geometry = new THREE.SphereGeometry(2);
         this.material = new THREE.MeshStandardMaterial({ color: "yellow" });
+        this.mesh = new THREE.Mesh(this.geometry, this.material);
+        //this.mesh.position.copy(position);
         break;
       }
     }
@@ -28,6 +35,7 @@ const Item = function (type, position, value, onDestroy) {
   };
 
   this.destroy = () => {
+    if (type == "health") scene.remove(this.VidaCSG);
     scene.remove(this.mesh);
     if (onDestroy) onDestroy();
   };
