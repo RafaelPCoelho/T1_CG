@@ -103,6 +103,45 @@ export default {
         x: -10,
         z: -2050,
       },
+      // a
+      {
+        type: ENEMIES.AIRPLANE,
+        x: -40,
+        z: -2150,
+        movement: MOVEMENTS.STRAIGHT,
+        direction: MOVEMENTS.DIRECTIONS.STRAIGHT_FORWARD,
+      },
+      {
+        type: ENEMIES.AIRPLANE,
+        x: 60,
+        z: -2250,
+        movement: MOVEMENTS.DIAGONAL,
+        direction: MOVEMENTS.DIRECTIONS.DIAGONAL_LEFT,
+      },
+      {
+        type: ENEMIES.TANK,
+        x: -50,
+        z: -2100,
+      },
+      {
+        type: ENEMIES.AIRPLANE,
+        x: -60,
+        z: -2350,
+        movement: MOVEMENTS.DIAGONAL,
+        direction: MOVEMENTS.DIRECTIONS.DIAGONAL_RIGHT,
+      },
+      {
+        type: ENEMIES.AIRPLANE,
+        x: 10,
+        z: -2450,
+        movement: MOVEMENTS.ARC,
+        direction: MOVEMENTS.DIRECTIONS.ARC_LEFT,
+      },
+      {
+        type: ENEMIES.TANK,
+        x: 60,
+        z: -2500,
+      },
 
       /**
        * Teste de movimentos dos inimigos
