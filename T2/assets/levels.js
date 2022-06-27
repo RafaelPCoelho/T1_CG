@@ -163,9 +163,13 @@ export default {
        * Drop de itens no mapa
        * Soma ao atributo {type} do aviao o valor {value}
        */
-      { type: "health", x: 0, z: -100, value: 20 },
-      { type: "reloadTime", x: -50, z: -300, value: -0.5 },
-      { type: "shootDelay", x: 20, z: -500, value: -0.05 },
+      { type: "health", x: 0, z: -400, value: 20 },
+      // { type: "reloadTime", x: -50, z: -300, value: -0.5 },
+      // { type: "shootDelay", x: 20, z: -500, value: -0.05 },
+      { type: "health", x: 50, z: -800, value: 20 },
+      { type: "health", x: -40, z: -1200, value: 20 },
+      { type: "health", x: 0, z: -1600, value: 20 },
+      { type: "health", x: 60, z: -2000, value: 20 },
     ],
   },
 };
