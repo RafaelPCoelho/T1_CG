@@ -41,9 +41,19 @@ scene.add(ambientLight);
 
 var keyboard = new KeyboardState();
 var camera = new Camera();
-var airplane = new Airplane();
-var plano = new Plano();
 var game = new Game();
+
+Promise.all([
+  game.preload("./assets/aviaoGLTF.gltf"),
+  game.preload("./assets/Inimigo1GLTF.gltf"),
+  game.preload("./assets/Inimigo2GLTF.gltf"),
+  game.preload("./assets/Inimigo3GLTF.gltf"),
+]).then(() => {
+  game.triggerLoadListeners();
+});
+
+var plano = new Plano();
+var airplane = new Airplane();
 var light = new Light();
 
 var healthBar = new HealthBar();

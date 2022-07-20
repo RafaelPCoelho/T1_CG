@@ -2,13 +2,42 @@ import * as THREE from "three";
 import { airplane, cannons, enemies, keyboard, items } from "../script.js";
 import inputLevels from "../assets/levels.js";
 import { ITEMS, GAMEMODES, LEVELS, ENEMIES } from "./Consts.js";
+import { GLTFLoader } from "../../build/jsm/loaders/GLTFLoader.js";
 
 const Game = function () {
   this.gamemode = GAMEMODES.SURVIVAL;
   this.levelType = LEVELS.NORMAL;
+  this.gltfLoader = new GLTFLoader();
   this.preloads = {};
+  this.loadListeners = {};
 
-  this.preload = (name, asset) => {};
+  this.preload = async (url) => {
+    if (!this.preloads[url]) {
+      try {
+        this.preloads[url] = await this.gltfLoader.loadAsync(url);
+
+        console.log("[GLTF LOADER]", url, "LOADED", this.preloads[url]);
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  };
+
+  this.load = (url, onLoad) => {
+    console.log("[GLTF LOADER]", "BINDED LISTENER", url);
+    if (!Array.isArray(this.loadListeners[url])) this.loadListeners[url] = [];
+
+    this.loadListeners[url].push(onLoad);
+  };
+
+  this.triggerLoadListeners = () => {
+    console.log("[GLTF LOADER]", "TRIGGER LISTENERS", this.loadListeners);
+    Object.keys(this.loadListeners).forEach((url) => {
+      this.loadListeners[url].forEach((listener) =>
+        listener(this.preloads[url].scene.clone())
+      );
+    });
+  };
 
   // Seta o modo de jogo para sobrevivencia
   this.setGamemodeSurvival = () => {

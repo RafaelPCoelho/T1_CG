@@ -2,13 +2,14 @@ import * as THREE from "three";
 import { checkCollision } from "../libs/Collision/index.js";
 import { predictPosition } from "../libs/utils/funcs.js";
 import { distVec } from "../libs/utils/vec.js";
-import { airplane, camera, scene } from "../script.js";
+import { airplane, camera, game, scene } from "../script.js";
 
 const Missile = function (position, onDestroy) {
   this.init = () => {
     this.geometry = new THREE.BoxGeometry(2, 2, 2);
     this.material = new THREE.MeshStandardMaterial({ color: "red" });
     this.mesh = new THREE.Mesh(this.geometry, this.material);
+    this.gltf = null;
     this.mesh.castShadow = true;
 
     this.alive = true;
@@ -22,6 +23,14 @@ const Missile = function (position, onDestroy) {
 
     scene.add(this.mesh);
     this.mesh.position.copy(position);
+
+    game.load("./assets/MissileGLTF.gltf", (gltf) => {
+      this.glth = gltf;
+      scene.add(gltf);
+      this.inimigo.traverse(function (child) {
+        if (child) child.castShadow = true;
+      });
+    });
   };
 
   this.destroy = () => {
@@ -69,6 +78,8 @@ const Missile = function (position, onDestroy) {
   this.update = (dt) => {
     if (this.alive) this.aliveBehaviour(dt);
     else this.deathBehaviour(dt);
+
+    if (this.gltf) this.gltf.position.copy(this.mesh.position);
   };
 
   this.init();
