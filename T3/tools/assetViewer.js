@@ -77,10 +77,14 @@ const model = {
     enemy_02: { gltf: "../assets/Inimigo2GLTF.gltf", sounds: {} },
     enemy_03: { gltf: "../assets/Inimigo3GLTF.gltf", sounds: {} },
     enemy_ground: {
-      gltf: "../assets/missileLaucherGLTF.gltf",
+      gltf: "../assets/models/missile_launcher_tower/scene.gltf",
       sounds: {
         LaunchMissile: "../assets/sounds/missile.wav",
       },
+    },
+    missile: {
+      gltf: "../assets/models/missile_stinger/scene.gltf",
+      sounds: {},
     },
   },
   allSounds: {

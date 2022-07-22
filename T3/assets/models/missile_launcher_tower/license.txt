@@ -1,0 +1,11 @@
+Model Information:
+* title:	Missile launcher tower
+* source:	https://sketchfab.com/3d-models/missile-launcher-tower-ce7e6eff3fef4a8b989025cbc52d2bf4
+* author:	Stugadev (https://sketchfab.com/stugadev)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Missile launcher tower" (https://sketchfab.com/3d-models/missile-launcher-tower-ce7e6eff3fef4a8b989025cbc52d2bf4) by Stugadev (https://sketchfab.com/stugadev) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

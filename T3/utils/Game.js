@@ -27,7 +27,8 @@ const Game = function () {
     console.log("[GLTF LOADER]", "BINDED LISTENER", url);
     if (!Array.isArray(this.loadListeners[url])) this.loadListeners[url] = [];
 
-    this.loadListeners[url].push(onLoad);
+    if (this.preloads[url]) onLoad(this.preloads[url].scene.clone());
+    else this.loadListeners[url].push(onLoad);
   };
 
   this.triggerLoadListeners = () => {

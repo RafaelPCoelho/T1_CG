@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { degreesToRadians } from "../../libs/util/util.js";
 import { checkCollision } from "../libs/Collision/index.js";
 import { predictPosition } from "../libs/utils/funcs.js";
 import { distVec } from "../libs/utils/vec.js";
@@ -21,13 +22,17 @@ const Missile = function (position, onDestroy) {
     this.distance = 0;
     this.maxDistance = 1000;
 
-    scene.add(this.mesh);
+    // scene.add(this.mesh);
     this.mesh.position.copy(position);
 
-    game.load("./assets/MissileGLTF.gltf", (gltf) => {
-      this.glth = gltf;
-      scene.add(gltf);
-      this.inimigo.traverse(function (child) {
+    game.load("./assets/models/missile_stinger/scene.gltf", (gltf) => {
+      this.gltf = gltf;
+      this.gltf.scale.set(10, 10, 10);
+      this.gltf.position.copy(this.mesh.position);
+
+      scene.add(this.gltf);
+
+      this.gltf.traverse(function (child) {
         if (child) child.castShadow = true;
       });
     });
@@ -79,7 +84,11 @@ const Missile = function (position, onDestroy) {
     if (this.alive) this.aliveBehaviour(dt);
     else this.deathBehaviour(dt);
 
-    if (this.gltf) this.gltf.position.copy(this.mesh.position);
+    if (this.gltf) {
+      this.gltf.position.copy(this.mesh.position);
+      this.gltf.rotation.copy(this.mesh.rotation);
+      if (!this.inPosition) this.gltf.rotateX(degreesToRadians(90));
+    }
   };
 
   this.init();

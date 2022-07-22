@@ -48,6 +48,8 @@ Promise.all([
   game.preload("./assets/Inimigo1GLTF.gltf"),
   game.preload("./assets/Inimigo2GLTF.gltf"),
   game.preload("./assets/Inimigo3GLTF.gltf"),
+  game.preload("./assets/models/missile_launcher_tower/scene.gltf"),
+  game.preload("./assets/models/missile_stinger/scene.gltf"),
 ]).then(() => {
   game.triggerLoadListeners();
 });
