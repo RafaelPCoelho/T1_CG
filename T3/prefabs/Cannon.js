@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { checkCollision } from "../libs/Collision/index.js";
 import EntityList from "../utils/EntityList.js";
 import Missile from "./Missile.js";
-import { scene, camera, airplane } from "../script.js";
+import { scene, camera, airplane, game } from "../script.js";
 import MisselLauncher from "../utils/MisselLauncher.js";
 
 const Cannon = function (position, onDestroy) {
@@ -11,6 +11,9 @@ const Cannon = function (position, onDestroy) {
     this.geometry = new THREE.BoxGeometry(20, 10, 20);
     this.material = new THREE.MeshStandardMaterial();
     this.mesh = new THREE.Mesh(this.geometry, this.material);
+    this.audio = new THREE.PositionalAudio(camera.audioListener);
+    this.audio.hasPlaybackControl = true;
+    scene.add(this.audio);
 
     this.launcher = new MisselLauncher(this.mesh.position);
 
@@ -27,6 +30,7 @@ const Cannon = function (position, onDestroy) {
   };
 
   this.destroy = () => {
+    game.play("./assets/sounds/destroy_enemy.wav", this.audio);
     this.alive = false;
     scene.remove(this.launcher.launcher);
   };
@@ -72,6 +76,8 @@ const Cannon = function (position, onDestroy) {
         this.aliveBehaviour(dt);
       }
     } else this.deathBehaviour(dt);
+
+    this.audio.position.copy(this.mesh.position);
 
     // Chama update de todos os mísseis
     this.missiles.update(dt);

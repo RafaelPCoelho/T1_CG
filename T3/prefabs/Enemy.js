@@ -23,6 +23,9 @@ const Enemy = function (
         color: "rgb(150, 60, 30)",
       })
     );
+    this.audio = new THREE.PositionalAudio(camera.audioListener);
+    this.audio.hasPlaybackControl = true;
+    scene.add(this.audio);
 
     this.enemyGLTF = null;
     switch (movement) {
@@ -147,6 +150,7 @@ const Enemy = function (
     // Verifica colisão do inimigo com cada bala disparada pelo avião
     Object.values(airplane.bullets.entities).forEach((bullet) => {
       if (checkCollision(this.mesh, bullet.mesh)) {
+        game.play("./assets/sounds/destroy_enemy.wav", this.audio);
         bullet.destroy();
         this.destroy();
       }
@@ -166,6 +170,13 @@ const Enemy = function (
       this.bulletTicker.update(dt);
       this.move(dt);
     }
+
+    if (this.enemyGLTF.inimigo) {
+      this.enemyGLTF.inimigo.lookAt(airplane.mesh.position);
+
+      if (movement == MOVEMENTS.DIAGONAL)
+        this.enemyGLTF.inimigo.rotateY(degreesToRadians(90));
+    }
   };
 
   // Roda o comportamento do inimigo quando seu estado é: morto,
@@ -173,11 +184,18 @@ const Enemy = function (
   // então um temporizador é disparado para eliminá-lo da cena
   // e seu destrutor ( se passado nos parâmetros ) é chamado
   // para removê-lo de seu array controlador
+  // var played = false;
   this.deathBehaviour = (dt) => {
     if (this.mesh.position.y <= 2) {
+      // if (!played) {
+      //   played = true;
+      //   game.play("./assets/sounds/destroy_enemy.wav");
+      // }
+
       setTimeout(() => {
-        //scene.remove(this.mesh);
+        // scene.remove(this.mesh);
         scene.remove(this.enemyGLTF.inimigo);
+
         if (onDestroy && this.bullets.isEmpty()) onDestroy();
       }, 1000);
     } else {
@@ -193,6 +211,8 @@ const Enemy = function (
 
     if (this.enemyGLTF.inimigo)
       this.enemyGLTF.inimigo.position.copy(this.mesh.position);
+
+    this.audio.position.copy(this.mesh.position);
 
     this.bullets.update(dt);
   };

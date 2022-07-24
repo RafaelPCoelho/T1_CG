@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { checkCollision } from "../libs/Collision/index.js";
 import { predictPosition } from "../libs/utils/funcs.js";
-import { airplane, scene } from "../script.js";
+import { airplane, camera, game, scene } from "../script.js";
 
 const EnemyBullet = function (position, onDestroy) {
   // Inicia a bala já prevendo a posicao do inimigo
@@ -27,6 +27,10 @@ const EnemyBullet = function (position, onDestroy) {
       )
     );
     scene.add(this.mesh);
+    this.audio = new THREE.PositionalAudio(camera.audioListener);
+    this.audio.hasPlaybackControl = true;
+    this.mesh.add(this.audio);
+    game.play("./assets/sounds/hit_enemy.ogg", this.audio);
   };
 
   this.destroy = () => {
@@ -38,7 +42,7 @@ const EnemyBullet = function (position, onDestroy) {
     if (!checkCollision(this.mesh, airplane.mesh)) return;
 
     this.destroy();
-    airplane.damage(20);
+    airplane.damage(10);
   };
 
   // Anda reto até que atinja o alvo ou uma distancia limite

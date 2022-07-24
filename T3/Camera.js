@@ -20,6 +20,9 @@ const Camera = function () {
   this.deathTimer = 0;
   this.delayAfterDie = 2;
 
+  this.audioListener = new THREE.AudioListener();
+  this.camera.add(this.audioListener);
+
   // Inicia a camera com sua posição inicial
   this.init = () => {
     this.cameraTransform.position.set(0, 20, 0);
@@ -60,13 +63,7 @@ const Camera = function () {
         this.tickerX
       ),
       this.cameraTransform.position.y,
-      game.gamemode == GAMEMODES.SURVIVAL
-        ? this.cameraTransform.position.z
-        : slerp(
-            this.cameraTransform.position.z,
-            airplane.mesh.position.z,
-            this.tickerZ
-          )
+      this.cameraTransform.position.z
     );
 
     // Para que o valor não fique agarrado sempre em 1 após
@@ -78,13 +75,15 @@ const Camera = function () {
     this.tickerZ = lerp(this.tickerZ, 0, this.tickerZ / 2);
 
     // Movimenta a camera se estiver no modo sobrevivencia
-    if (game.gamemode == GAMEMODES.SURVIVAL)
-      this.cameraTransform.translateZ(this.vz);
+    // if (game.gamemode == GAMEMODES.SURVIVAL)
+    this.cameraTransform.translateZ(this.vz * (dt / 20));
   };
 
   this.update = (dt) => {
     if (!airplane.alive) this.deathBehaviour(dt);
     else this.aliveBehaviour(dt);
+
+    // this.audioListener.position.copy(this.cameraTransform.position);
   };
 
   this.init();

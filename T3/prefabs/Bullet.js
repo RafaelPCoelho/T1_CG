@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { scene, camera } from "../script.js";
+import { scene, camera, game } from "../script.js";
 
 const Bullet = function (position, onDestroy) {
   // Inicia a munição e suas propriedades
@@ -18,6 +18,11 @@ const Bullet = function (position, onDestroy) {
 
     this.mesh.position.copy(position);
     scene.add(this.mesh);
+
+    this.audio = new THREE.PositionalAudio(camera.audioListener);
+    this.audio.hasPlaybackControl = true;
+    this.mesh.add(this.audio);
+    game.play("./assets/sounds/hit_enemy.ogg", this.audio);
   };
 
   // Chama o destrutor passado como parametro ( se existir )

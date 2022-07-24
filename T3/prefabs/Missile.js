@@ -27,7 +27,7 @@ const Missile = function (position, onDestroy) {
 
     game.load("./assets/models/missile_stinger/scene.gltf", (gltf) => {
       this.gltf = gltf;
-      this.gltf.scale.set(10, 10, 10);
+      this.gltf.scale.set(20, 20, 6);
       this.gltf.position.copy(this.mesh.position);
 
       scene.add(this.gltf);
@@ -36,11 +36,18 @@ const Missile = function (position, onDestroy) {
         if (child) child.castShadow = true;
       });
     });
+
+    this.audio = new THREE.PositionalAudio(camera.audioListener);
+    this.audio.hasPlaybackControl = true;
+    scene.add(this.audio);
+    this.audio.position.copy(this.mesh.position);
+    game.play("./assets/sounds/missile.wav", this.audio);
   };
 
   this.destroy = () => {
     this.alive = false;
     scene.remove(this.mesh);
+    if (this.gltf) scene.remove(this.gltf);
 
     if (onDestroy) onDestroy();
   };
@@ -60,7 +67,7 @@ const Missile = function (position, onDestroy) {
             airplane.mesh.position,
             this.speed,
             new THREE.Vector3(airplane.vx, airplane.vy, airplane.vz),
-            5,
+            1,
             dt
           )
         );
@@ -89,6 +96,8 @@ const Missile = function (position, onDestroy) {
       this.gltf.rotation.copy(this.mesh.rotation);
       if (!this.inPosition) this.gltf.rotateX(degreesToRadians(90));
     }
+
+    this.audio.position.copy(this.mesh.position);
   };
 
   this.init();

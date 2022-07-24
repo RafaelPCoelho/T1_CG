@@ -49,13 +49,12 @@ const loadModel = async (model) => {
   current = cached[model];
 };
 
-var currentSound = "";
-
 const player = {
   trigger: async (sound) => {
     console.log(sound);
 
-    const musicBuffer = await audioLoader.loadAsync(currentSound);
+    const musicBuffer = await audioLoader.loadAsync(sound);
+    if (audio.isPlaying) audio.stop();
     audio.setBuffer(musicBuffer);
     audio.play();
   },
@@ -66,9 +65,7 @@ const model = {
   types: {
     airplane: {
       gltf: "../assets/aviaoGLTF.gltf",
-      sounds: {
-        Shoot: "../assets/sounds/airplane_shoot.ogg",
-      },
+      sounds: {},
     },
     enemy_01: {
       gltf: "../assets/Inimigo1GLTF.gltf",
@@ -78,18 +75,23 @@ const model = {
     enemy_03: { gltf: "../assets/Inimigo3GLTF.gltf", sounds: {} },
     enemy_ground: {
       gltf: "../assets/models/missile_launcher_tower/scene.gltf",
-      sounds: {
-        LaunchMissile: "../assets/sounds/missile.wav",
-      },
+      sounds: {},
     },
     missile: {
       gltf: "../assets/models/missile_stinger/scene.gltf",
       sounds: {},
     },
+    torpedo: {
+      gltf: "../assets/models/aim120_amraam_air_to_air_missile/scene.gltf",
+      sounds: {},
+    },
   },
   allSounds: {
-    HitEnemy: "../assets/sounds/hit_enemy.ogg",
+    Shoot: "../assets/sounds/hit_enemy.ogg",
+    HitAirplane: "../assets/sounds/airplane_shoot.ogg",
     DestroyEnemy: "../assets/sounds/destroy_enemy.wav",
+    CollectHealth: "../assets/sounds/health.wav",
+    LaunchMissile: "../assets/sounds/missile.wav",
   },
 };
 
@@ -116,16 +118,26 @@ const hydrateFolder = () => {
   // soundsFolder = gui.addFolder("Sounds");
 
   Object.keys(model.types[model.selected].sounds).forEach((sound) => {
-    currentSound = model.types[model.selected].sounds[sound];
-    soundsFolder.add(player, "trigger", true).name(sound);
+    var s = model.types[model.selected].sounds[sound];
+
+    soundsFolder
+      .add({ trigger: () => player.trigger(s) }, "trigger")
+      .name(sound);
   });
 };
 
 const allSounds = gui.addFolder("All Sounds");
 
 Object.keys(model.allSounds).forEach((sound) => {
-  currentSound = model.allSounds[sound];
-  allSounds.add(player, "trigger").name(sound);
+  var s = model.allSounds[sound];
+  allSounds
+    .add(
+      {
+        trigger: () => player.trigger(s),
+      },
+      "trigger"
+    )
+    .name(sound);
 });
 
 const light = new THREE.AmbientLight();

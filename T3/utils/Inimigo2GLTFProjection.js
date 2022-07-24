@@ -7,6 +7,7 @@ const Enemy2GLTFProjection = function (position) {
   game.load("./assets/Inimigo2GLTF.gltf", (gltf) => {
     this.inimigo = gltf;
     this.inimigo.rotateY(degreesToRadians(-180));
+    // this.inimigo.rotateZ(degreesToRadians(90));
     scene.add(this.inimigo);
     this.inimigo.position.copy(position);
     this.inimigo.traverse(function (child) {

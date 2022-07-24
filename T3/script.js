@@ -50,6 +50,7 @@ Promise.all([
   game.preload("./assets/Inimigo3GLTF.gltf"),
   game.preload("./assets/models/missile_launcher_tower/scene.gltf"),
   game.preload("./assets/models/missile_stinger/scene.gltf"),
+  game.preload("./assets/models/aim120_amraam_air_to_air_missile/scene.gltf"),
 ]).then(() => {
   game.triggerLoadListeners();
 });
@@ -115,6 +116,9 @@ function render(time) {
   timestamp = time;
   fps = 1000 / deltaTime;
 
+  // Speed x5
+  // deltaTime *= 3;
+
   // Limpa o info e reescreve com o fps e a munição
   info.infoBox.innerHTML = "";
   info.add(
@@ -127,6 +131,8 @@ function render(time) {
     }`
   );
   info.add(`Health: ${airplane.health}`);
+  info.add(`Distance: ${(-1 * airplane.mesh.position.z + 80).toFixed(2)}`);
+  info.add(`Time: ${airplane.counter.toFixed(0)}s`);
   info.addParagraph();
   info.add(`fps: ${fps.toFixed(2)}`);
   info.show();

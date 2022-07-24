@@ -1,5 +1,12 @@
 import * as THREE from "three";
-import { airplane, cannons, enemies, keyboard, items } from "../script.js";
+import {
+  airplane,
+  cannons,
+  enemies,
+  keyboard,
+  items,
+  camera,
+} from "../script.js";
 import inputLevels from "../assets/levels.js";
 import { ITEMS, GAMEMODES, LEVELS, ENEMIES } from "./Consts.js";
 import { GLTFLoader } from "../../build/jsm/loaders/GLTFLoader.js";
@@ -8,18 +15,23 @@ const Game = function () {
   this.gamemode = GAMEMODES.SURVIVAL;
   this.levelType = LEVELS.NORMAL;
   this.gltfLoader = new GLTFLoader();
+  this.audioLoader = new THREE.AudioLoader();
   this.preloads = {};
   this.loadListeners = {};
+  this.audio = new THREE.Audio(camera.audioListener);
+  this.audio.setVolume(0.2);
 
   this.preload = async (url) => {
-    if (!this.preloads[url]) {
-      try {
-        this.preloads[url] = await this.gltfLoader.loadAsync(url);
+    if (this.preloads[url]) return;
 
-        console.log("[GLTF LOADER]", url, "LOADED", this.preloads[url]);
-      } catch (err) {
-        console.log(err);
-      }
+    try {
+      if (url.match(/wav|ogg/))
+        this.preloads[url] = await this.audioLoader.loadAsync(url);
+      else this.preloads[url] = await this.gltfLoader.loadAsync(url);
+
+      console.log("[GAME LOADER]", url, "LOADED", this.preloads[url]);
+    } catch (err) {
+      console.log(err);
     }
   };
 
@@ -31,8 +43,24 @@ const Game = function () {
     else this.loadListeners[url].push(onLoad);
   };
 
+  this.play = (url, audio) => {
+    const playIfFound = () => {
+      if (audio.isPlaying) audio.stop();
+      audio.setBuffer(this.preloads[url]);
+      if (audio.setRefDistance) audio.setRefDistance(20);
+      audio.play(0);
+    };
+
+    if (this.preloads[url]) {
+      playIfFound();
+    } else {
+      this.preload(url).then(playIfFound);
+    }
+  };
+
   this.triggerLoadListeners = () => {
     console.log("[GLTF LOADER]", "TRIGGER LISTENERS", this.loadListeners);
+
     Object.keys(this.loadListeners).forEach((url) => {
       this.loadListeners[url].forEach((listener) =>
         listener(this.preloads[url].scene.clone())
@@ -48,7 +76,7 @@ const Game = function () {
   // Seta o modo de jogo para criativo
   this.setGamemodeCreative = () => {
     this.gamemode = GAMEMODES.CREATIVE;
-    airplane.vz = 0;
+    // airplane.vz = 0;
   };
 
   // Inicia o level
@@ -98,6 +126,20 @@ const Game = function () {
       else this.setGamemodeSurvival();
     }
   };
+
+  this.over = () => {
+    airplane.gameOver = true;
+    alert("Game Over");
+    window.location.reload();
+  };
+
+  this.end = () => {
+    airplane.gameOver = true;
+    alert("You won!");
+    window.location.reload();
+  };
+
+  this.play("./assets/sounds/background.wav", this.audio);
 };
 
 export default Game;

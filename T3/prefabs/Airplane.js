@@ -54,6 +54,9 @@ const Airplane = function () {
       new THREE.ConeGeometry(this.radius, this.size),
       this.material
     );
+    this.audio = new THREE.PositionalAudio(camera.audioListener);
+    this.audio.hasPlaybackControl = true;
+    scene.add(this.audio);
 
     this.aviao = new AviaoGLTFProjection(this.mesh.position);
 
@@ -71,6 +74,8 @@ const Airplane = function () {
   this.destroy = () => {
     if (!this.alive || game.gamemode == GAMEMODES.CREATIVE) return;
 
+    game.play("./assets/sounds/destroy_enemy.wav", this.audio);
+
     this.alive = false;
     this.vz = 0;
     this.vy = 2;
@@ -78,12 +83,12 @@ const Airplane = function () {
 
   // Enquanto tiver munição e puder atirar dispara uma nova bala e define um novo tempo
   // com base no intervalo entre tiros para poder atirar novamente
-  this.shoot = (delay = true) => {
+  this.shoot = () => {
     if (this.ammo > 0 && this.counter >= this.nextShoot) {
       this.ammo--;
 
       if (this.ammo == 0) this.nextReload = this.counter + this.reloadTime;
-      this.nextShoot = this.counter + (delay ? this.shootDelay : 0);
+      this.nextShoot = this.counter + this.shootDelay;
 
       this.bullets.add(this.mesh.position);
     }
@@ -95,31 +100,31 @@ const Airplane = function () {
 
   // Define o comportamento das teclas
   this.keys = () => {
-    if (game.gamemode == GAMEMODES.SURVIVAL) {
-      if (keyboard.pressed("A") || keyboard.pressed("left")) this.vx = -1;
-      if (keyboard.pressed("D") || keyboard.pressed("right")) this.vx = 1;
-      if (keyboard.pressed("W") || keyboard.pressed("up")) this.vz = -2;
-      if (keyboard.pressed("S") || keyboard.pressed("down")) this.vz = 0.5;
-      if (
-        keyboard.up("W") ||
-        keyboard.up("S") ||
-        keyboard.up("up") ||
-        keyboard.up("down")
-      )
-        this.vz = -1;
-    } else {
-      if (keyboard.pressed("A") || keyboard.pressed("left")) this.vx = -4;
-      if (keyboard.pressed("D") || keyboard.pressed("right")) this.vx = 4;
-      if (keyboard.pressed("W") || keyboard.pressed("up")) this.vz = -4;
-      if (keyboard.pressed("S") || keyboard.pressed("down")) this.vz = 4;
-      if (
-        keyboard.up("W") ||
-        keyboard.up("S") ||
-        keyboard.up("up") ||
-        keyboard.up("down")
-      )
-        this.vz = 0;
-    }
+    // if (game.gamemode == GAMEMODES.SURVIVAL) {
+    if (keyboard.pressed("A") || keyboard.pressed("left")) this.vx = -1;
+    if (keyboard.pressed("D") || keyboard.pressed("right")) this.vx = 1;
+    if (keyboard.pressed("W") || keyboard.pressed("up")) this.vz = -2;
+    if (keyboard.pressed("S") || keyboard.pressed("down")) this.vz = 0.5;
+    if (
+      keyboard.up("W") ||
+      keyboard.up("S") ||
+      keyboard.up("up") ||
+      keyboard.up("down")
+    )
+      this.vz = -1;
+    // } else {
+    //   if (keyboard.pressed("A") || keyboard.pressed("left")) this.vx = -4;
+    //   if (keyboard.pressed("D") || keyboard.pressed("right")) this.vx = 4;
+    //   if (keyboard.pressed("W") || keyboard.pressed("up")) this.vz = -4;
+    //   if (keyboard.pressed("S") || keyboard.pressed("down")) this.vz = 4;
+    //   if (
+    //     keyboard.up("W") ||
+    //     keyboard.up("S") ||
+    //     keyboard.up("up") ||
+    //     keyboard.up("down")
+    //   )
+    //     this.vz = 0;
+    // }
 
     if (
       keyboard.up("A") ||
@@ -137,7 +142,15 @@ const Airplane = function () {
     }
 
     // if (keyboard.down("ctrl")) this.shoot(false);
-    if (keyboard.pressed("ctrl")) this.shoot(true);
+    if (keyboard.pressed("ctrl") || keyboard.pressed("E")) this.shoot(true);
+    if (keyboard.up("ctrl") || keyboard.up("E")) {
+      this.nextShoot = this.counter;
+    }
+
+    if (keyboard.down("R")) {
+      this.ammo = 0;
+      this.nextReload = this.counter + this.reloadTime;
+    }
   };
 
   // Roda o comportamento do avião quando seu estado é: vivo
@@ -154,7 +167,7 @@ const Airplane = function () {
       y + this.vy,
       Math.max(
         -100 + cam.position.z,
-        Math.min(80 + cam.position.z, z + this.vz)
+        Math.min(80 + cam.position.z, z + this.vz * (dt / 20))
       )
     );
 
@@ -199,9 +212,7 @@ const Airplane = function () {
     this.aviao.aviao.rotateX(degreesToRadians(35 * (dt / 100)));
 
     if (this.mesh.position.y <= 0) {
-      this.gameOver = true;
-      alert("Game Over");
-      window.location.reload();
+      game.over();
     }
   };
 
@@ -209,6 +220,10 @@ const Airplane = function () {
   this.update = (dt) => {
     if (this.alive) this.aliveBehaviour(dt);
     else this.deathBehaviour(dt);
+
+    this.audio.position.copy(this.mesh.position);
+
+    if (this.mesh.position.z < -7200) game.end();
   };
 
   // Da dano no aviao, respeitando os limites da vida e o modo de jogo
@@ -218,6 +233,7 @@ const Airplane = function () {
     this.health = clamp(this.health - Math.abs(value), 0, 100);
     this.canRegenerate = false;
     this.fodTicker.reset();
+    game.play("./assets/sounds/airplane_shoot.ogg", this.audio);
 
     if (this.health <= 0) this.destroy();
   };
