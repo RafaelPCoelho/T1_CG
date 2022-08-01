@@ -10,6 +10,7 @@ import EnemyBullet from "./EnemyBullet.js";
 import Enemy1GLTFProjection from "../utils/Inimigo1GLTFProjection.js";
 import Enemy2GLTFProjection from "../utils/Inimigo2GLTFProjection.js";
 import Enemy3GLTFProjection from "../utils/Inimigo3GLTFProjection.js";
+import ExplosionProjection from "../utils/ExplosionProjection.js";
 const Enemy = function (
   position,
   movement = MOVEMENTS.STRAIGHT,
@@ -208,6 +209,10 @@ const Enemy = function (
 
   // Atualiza a cada frame o estado do inimigo
   this.update = (dt) => {
+    if (this.explosion) {
+      this.explosion.update();
+      this.explosion.explosao.position.copy(this.mesh.position);
+    }
     if (this.alive) this.aliveBehaviour(dt);
     else this.deathBehaviour(dt);
 

@@ -33,16 +33,18 @@ const ExplosionProjection = function (position) {
   });
   this.geometria = new THREE.BoxGeometry(20, 20, 0);
   this.explosao = new THREE.Mesh(this.geometria, this.material);
-  this.explosao.position.copy(position);
 
   this.update = () => {
     if (!this.loaded) return;
 
     this.explosao.lookAt(camera.cameraTransform.position);
-
+    this.explosao.position.copy(position);
     this.material.map = this.textures[this.i];
     this.i++;
-    if (this.i >= this.textures.length) this.i = 0;
+    if (this.i >= this.textures.length * 2) {
+      this.loaded = false;
+      scene.remove(this.explosao);
+    }
   };
 };
 
