@@ -5,7 +5,7 @@ const Bullet = function (position, onDestroy) {
   // Inicia a munição e suas propriedades
   this.init = () => {
     this.mesh = new THREE.Mesh(
-      new THREE.BoxGeometry(1, 1, 10),
+      new THREE.BoxGeometry(0.5, 0.5, 5),
       new THREE.MeshStandardMaterial({
         color: "#ffff00",
       })

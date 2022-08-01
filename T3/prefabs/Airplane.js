@@ -10,6 +10,7 @@ import { GLTFLoader } from "../../build/jsm/loaders/GLTFLoader.js";
 import AviaoGLTFProjection from "../utils/AviaoGLTFProjection.js";
 import { clamp, slerp } from "../libs/utils/math.js";
 import Ticker from "../utils/Ticker.js";
+import ExplosionProjection from "../utils/ExplosionProjection.js";
 
 const Airplane = function () {
   // Inicia o avião com as configurações padrão
@@ -204,12 +205,14 @@ const Airplane = function () {
   // Roda o comportamento do avião quando seu estado é: morto
   // (derruba o avião e ao encostar no chão, termina o jogo)
   this.deathBehaviour = (dt) => {
+    if (!this.explosion)
+      this.explosion = new ExplosionProjection(this.mesh.position);
     this.vz -= 4.5 * (dt / 1000);
     this.vy -= 1 * (dt / 1000);
 
     this.mesh.translateY(this.vy);
     this.mesh.translateZ(this.vz);
-    this.aviao.aviao.rotateX(degreesToRadians(35 * (dt / 100)));
+    this.aviao.aviao?.rotateX(degreesToRadians(35 * (dt / 100)));
 
     if (this.mesh.position.y <= 0) {
       game.over();
@@ -222,8 +225,7 @@ const Airplane = function () {
     else this.deathBehaviour(dt);
 
     this.audio.position.copy(this.mesh.position);
-
-    if (this.mesh.position.z < -7200) game.end();
+    if (this.explosion) this.explosion.update(dt);
   };
 
   // Da dano no aviao, respeitando os limites da vida e o modo de jogo

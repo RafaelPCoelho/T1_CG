@@ -20,6 +20,8 @@ const Game = function () {
   this.loadListeners = {};
   this.audio = new THREE.Audio(camera.audioListener);
   this.audio.setVolume(0.2);
+  this.currentLevel = 0;
+  this.mapEnd = 500;
 
   this.preload = async (url) => {
     if (this.preloads[url]) return;
@@ -62,9 +64,9 @@ const Game = function () {
     console.log("[GLTF LOADER]", "TRIGGER LISTENERS", this.loadListeners);
 
     Object.keys(this.loadListeners).forEach((url) => {
-      this.loadListeners[url].forEach((listener) =>
-        listener(this.preloads[url].scene.clone())
-      );
+      this.loadListeners[url].forEach((listener) => {
+        if (this.preloads[url]) listener(this.preloads[url].scene.clone());
+      });
     });
   };
 
@@ -81,6 +83,9 @@ const Game = function () {
 
   // Inicia o level
   this.loadLevel = (level = 1) => {
+    if (level == this.currentLevel) return;
+    this.currentLevel = level;
+
     // Spawna os inimigos
     inputLevels[level].enemies.forEach((enemy) => {
       switch (enemy.type) {
@@ -118,6 +123,12 @@ const Game = function () {
         item.value
       );
     });
+
+    let enemiesLength = inputLevels[level].enemies.length;
+    this.mapEnd =
+      inputLevels[level].enemies[enemiesLength - 1].z +
+      inputLevels[level].z +
+      -500;
   };
 
   this.update = (dt) => {

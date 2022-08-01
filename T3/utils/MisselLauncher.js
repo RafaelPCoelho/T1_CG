@@ -5,7 +5,7 @@ const MisselLauncher = function (position) {
     "./assets/models/missile_launcher_tower/scene.gltf",
     (gltf) => {
       this.launcher = gltf;
-      // this.launcher.scale.set(2, 2, 2);
+      // this.launcher.scale.set(10, 10, 10);
       this.launcher.position.copy(position);
       this.launcher.traverse(function (child) {
         if (child) child.castShadow = true;

@@ -6,8 +6,8 @@ import { airplane, camera, game, scene } from "../script.js";
 const EnemyBullet = function (position, onDestroy) {
   // Inicia a bala já prevendo a posicao do inimigo
   this.init = () => {
-    this.geometry = new THREE.SphereGeometry(1);
-    this.material = new THREE.MeshStandardMaterial({ color: "red" });
+    this.geometry = new THREE.BoxGeometry(0.5, 0.5, 5);
+    this.material = new THREE.MeshStandardMaterial({ color: "orange" });
     this.mesh = new THREE.Mesh(this.geometry, this.material);
     this.mesh.castShadow = true;
 

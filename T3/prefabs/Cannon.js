@@ -27,6 +27,8 @@ const Cannon = function (position, onDestroy) {
     // scene.add(this.mesh);
     if (position) this.mesh.position.copy(position);
     else this.mesh.position.set(0, 1, -200);
+
+    // this.mesh.translateY(0);
   };
 
   this.destroy = () => {

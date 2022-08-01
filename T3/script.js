@@ -13,11 +13,9 @@ import Camera from "./Camera.js";
 import Enemy from "./prefabs/Enemy.js";
 import Cannon from "./prefabs/Cannon.js";
 import EntityList from "./utils/EntityList.js";
-import Ticker from "./utils/Ticker.js";
 import Game from "./utils/Game.js";
 import Item from "./prefabs/Item.js";
 import { GAMEMODES } from "./utils/Consts.js";
-import DebugBox from "./prefabs/DebugBox.js";
 import Light from "./Light.js";
 import HealthBar from "./utils/HealthBar.js";
 
@@ -116,8 +114,8 @@ function render(time) {
   timestamp = time;
   fps = 1000 / deltaTime;
 
-  // Speed x5
-  // deltaTime *= 3;
+  // Speed x3
+  deltaTime *= 2;
 
   // Limpa o info e reescreve com o fps e a munição
   info.infoBox.innerHTML = "";
@@ -131,7 +129,7 @@ function render(time) {
     }`
   );
   info.add(`Health: ${airplane.health}`);
-  info.add(`Distance: ${(-1 * airplane.mesh.position.z + 80).toFixed(2)}`);
+  info.add(`Distance: ${(-1 * airplane.mesh.position.z + 80).toFixed(0)}`);
   info.add(`Time: ${airplane.counter.toFixed(0)}s`);
   info.addParagraph();
   info.add(`fps: ${fps.toFixed(2)}`);
@@ -158,15 +156,16 @@ function render(time) {
     items.update(deltaTime);
   }
 
-  // console.log(plano.visibleDepth);
+  if (airplane.mesh.position.z < -1600 && game.currentLevel == 1)
+    game.loadLevel(2);
+  if (airplane.mesh.position.z < -3700 && game.currentLevel == 2)
+    game.loadLevel(3);
+  if (airplane.mesh.position.z < -4900 && game.currentLevel == 3)
+    game.loadLevel(4);
+  if (airplane.mesh.position.z < -6500 && game.currentLevel == 4)
+    game.loadLevel(5);
 
-  // debugBox.follow(
-  //   new THREE.Vector3(
-  //     0,
-  //     2,
-  //     airplane.mesh.position.z - plano.visibleDepth + 1000
-  //   )
-  // );
+  if (airplane.mesh.position.z <= game.mapEnd && !airplane.gameOver) game.end();
 
   stats.update(); // Update FPS
   requestAnimationFrame(render);

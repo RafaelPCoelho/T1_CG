@@ -199,6 +199,8 @@ const Enemy = function (
         if (onDestroy && this.bullets.isEmpty()) onDestroy();
       }, 1000);
     } else {
+      if (!this.explosion)
+        this.explosion = new ExplosionProjection(this.mesh.position);
       this.vy -= 4.5 * (dt / 1000);
       this.mesh.translateY(this.vy);
     }
